@@ -1,0 +1,11 @@
+<div class="container-fluid">
+    <div class="row">
+        <div *ngFor="let board of boards" class="col-2">
+            <div class="card">
+                {{board.questions.length}}
+                <a [routerLink]="['/play', board?.id]"
+                routerLinkActive="router-link-active">Play</a>
+            </div>
+        </div>
+    </div>
+</div>

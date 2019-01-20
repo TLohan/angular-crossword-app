@@ -1,0 +1,47 @@
+<div class="container-fluid" style="text-align: left;">
+    <br>
+    <h4>Play Crossword</h4>
+    <hr>
+    <div class="row">
+        <div class="col-6 board">
+            <div class="d-flex justify-content-center align-items-center">
+                <div *ngFor="let row of board?.boardMap; let i = index" class="flex-row">
+                    <div *ngFor="let col of row; let j = index" class="cell emptyCell" (click)="selectCell(i, j)" id="{{'cell-' + i + '_'+ j}}">
+                        <div *ngIf="isClickable(i, j)">
+                            <p class="identifier" id="{{'identifier-'+ i + '_' + j}}"></p>
+                            <input type="text" maxlength="1" class="guess" id="{{'guess-' + i + '_' + j}}">
+                            <p class="letter" id="{{'letter-' + i + '_' + j}}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 questions">
+            {{selectedOrientation}}
+            <div class="card" *ngIf="selectedQuestion">
+                <div class="card-body d-flex question">
+                    <p class="text-secondary">{{selectedQuestion?.identifier}}</p>
+                    <h6>{{selectedQuestion?.clue}}</h6>
+                    <p class="text-secondary">({{selectedQuestion?.answer.length}})</p>
+                </div>
+            </div>
+            <br>
+
+            <h4>Questions</h4>
+            <div class="row">
+                <div class="col-6 across">
+                    <p>Across</p>
+                    <div *ngFor="let question of questionsAcross">
+                       {{question.identifier}} {{question?.clue}} ({{question?.answer.length}})
+                    </div>
+                </div>
+                <div class="col-6 down">
+                    <p>Down</p>
+                    <div *ngFor="let question of questionsDown">
+                        {{question.identifier}} {{question?.clue}} ({{question?.answer.length}})
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
