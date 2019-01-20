@@ -20,9 +20,9 @@ export class BoardService {
         return this.http.get(url);
     }
 
-    saveBoard(board: Board): void {
+    saveBoard(board: Board): Observable<any> {
         const url = `http://localhost:60844/api/xwords/new`;
         const body = board;
-        this.http.post(url, body).subscribe();
+        return this.http.post(url, body);
     }
 }
