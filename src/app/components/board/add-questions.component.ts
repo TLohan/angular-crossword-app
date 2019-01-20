@@ -16,7 +16,6 @@ export class AddQuestionsComponent implements OnInit {
     @Input()
     set board(value: Board) {
         this._board = value;
-        console.log(value.numRows);
         this._board.populateBoardMap();
     }
 
@@ -34,7 +33,7 @@ export class AddQuestionsComponent implements OnInit {
     private _orientation = 'down';
     questions: Question[] = [];
     @ViewChild('clue') clueField: ElementRef;
-    @ViewChild('downLabel') downLabel: ElementRef;
+    @ViewChild('downLabel') downLabel?: ElementRef;
     @ViewChild('acrossLabel') acrossLabel: ElementRef;
 
     alteredCells: HTMLElement[] = [];
@@ -45,6 +44,7 @@ export class AddQuestionsComponent implements OnInit {
 
     get clue() { return this.questionFormGroup.get('clue'); }
     get answer() { return this.questionFormGroup.get('answer'); }
+
     get questionsAcross(): Question[] {
         return this.questions.filter((question) => question.orientation === 'across');
     }
@@ -98,7 +98,9 @@ export class AddQuestionsComponent implements OnInit {
         });
         this.populateBoard();
         const answer = this.answer.value;
+
         let answerArr: string[] = answer.split('');
+
         answerArr = answerArr.slice(0, this.maxAnswerLength);
         this.answer.setValue(answerArr.join(''));
             let col = this.selectedCol;
@@ -193,7 +195,7 @@ export class AddQuestionsComponent implements OnInit {
         const answer = this.questionFormGroup.controls['answer'].value;
         const question = new Question(location, clue, answer, this.orientation, '');
         this.questions.push(question);
-        this.addQuestionMode = false;
+        // this.addQuestionMode = false;
     }
 
     checkValidity(): boolean {
@@ -215,6 +217,8 @@ export class AddQuestionsComponent implements OnInit {
     }
 
     onKey(event: any) {
+        console.log('triggered');
+        
         if (this.addQuestionMode) {
             this.alteredCells.forEach(cell => {
                 cell.innerHTML = '';
