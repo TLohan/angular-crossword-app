@@ -76,4 +76,42 @@ describe('CreateCrosswordComponent', () => {
         expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
     });
 
+    describe('CreateBoardComponent (child)', () => {
+        it('should trigger nextStep() when "Next Step" btn is clicked on CreateBoardComponent', () => {
+            // arrange
+            spyOn(fixture.componentInstance, 'nextStep');
+            fixture.componentInstance.board = new Board(10, 10);
+            fixture.detectChanges();
+            const createBoardComp = fixture.debugElement.query(By.directive(CreateBoardComponent));
+            const nextStepBtn = createBoardComp.query(By.css('#nextStepBtn'));
+
+            // act
+            nextStepBtn.triggerEventHandler('click', null);
+
+            // assert
+            expect(fixture.componentInstance.nextStep).toHaveBeenCalled();
+        });
+    });
+
+    describe('AddQuestionsComponent (child)', () => {
+
+        it('should trigger save() when "Save Crossword" btn is clicked', () => {
+            // arrange
+            mockBoardService.saveBoard.and.returnValue(of(true));
+            spyOn(fixture.componentInstance, 'save');
+            fixture.componentInstance.board = new Board(10, 10);
+            fixture.componentInstance.pickSizeMode = false;
+            fixture.detectChanges();
+            const addQuestionsComp = fixture.debugElement.query(By.directive(AddQuestionsComponent));
+            const submitBtn = addQuestionsComp.query(By.css('#saveCrosswordBtn'));
+
+            // act
+            submitBtn.triggerEventHandler('click', null);
+
+            // assert
+            expect(fixture.componentInstance.save).toHaveBeenCalled();
+        });
+
+    });
+
 });

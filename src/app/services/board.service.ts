@@ -25,4 +25,14 @@ export class BoardService {
         const body = board;
         return this.http.post(url, body);
     }
+
+    deleteBoard(board: Board): Observable<any> {
+        const url = `http://localhost:60844/api/xwords/${board.id}`;
+        return this.http.delete(url);
+    }
+
+    teapot(): Observable<any> {
+        const url = `http://localhost:60844/api/xwords/teapot`;
+        return this.http.get(url);
+    }
 }

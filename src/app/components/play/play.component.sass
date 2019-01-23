@@ -24,24 +24,21 @@ $sub-separator-blue: #9192fd
     .identifier
         z-index: 1
         position: absolute
-        font-size: .8em
-
-    .guess
-        height: 40px
-        width: 40px
-        text-align: center
-        border: 5px solid red
-        position: absolute
-        display: none
-        z-index: 5
+        font-size: .85em
+        color: blue
     
     .letter
+        font-family: monospace
+        font-size: 1.3em
+        font-weight: 700
         z-index: 5
         position: absolute
         // background-color: green
-        height: 40px
-        width: 40px
+        height: 35px
+        width: 35px
+        padding: 7px
         margin: 0
+        display: table-cell
         vertical-align: middle
 
 .invalidFeedback
@@ -65,18 +62,15 @@ $sub-separator-blue: #9192fd
 .selectedCell
     background-color: $selected-cell-color
 
-    .guess
-        display: inherit
+
+
+#questions
     
-    .letter
-        display: none
-
-.questions
-    margin-bottom: 2%
-
     .question
         p, h6
             margin-right: 5%
+            vertical-align: middle
+            margin-bottom: 0
 
     hr
         background-color: $separator-blue
@@ -110,3 +104,12 @@ $sub-separator-blue: #9192fd
 #answerMaxLengthValidation
     visibility: visible
 
+
+.questionItem
+    border-top: 1px solid grey
+    border-radius: 2%
+    padding: 4%
+
+    &:hover
+        cursor: pointer
+        background-color: pink

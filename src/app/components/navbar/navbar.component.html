@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Crosswords</a>
+    <a class="navbar-brand" href="#" tabindex="-1">Crosswords</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -7,13 +7,13 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="#"  tabindex="-1"   >Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/play', 4]" routerLinkActive="router-link-active">Play Random</a>
+          <a class="nav-link" [routerLink]="['/play', 4]" routerLinkActive="router-link-active" tabindex="-1">Play Random</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/create']" routerLinkActive="router-link-active" >Create</a>          
+            <a class="nav-link" [routerLink]="['/create']" routerLinkActive="router-link-active" tabindex="-1" >Create</a>          
         </li>
     </ul>
     </div>

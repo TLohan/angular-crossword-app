@@ -1,10 +1,17 @@
 <div class="container-fluid">
+    <br>
     <div class="row">
-        <div *ngFor="let board of boards" class="col-2">
-            <div class="card">
-                {{board.questions.length}}
-                <a [routerLink]="['/play', board?.id]"
-                routerLinkActive="router-link-active">Play</a>
+        <div *ngFor="let board of boards" id="boardList" class="col-3">
+            <div class="card" [routerLink]="['/play', board?.id]" routerLinkActive="router-link-active">
+                <div class="card-body">
+                    <div class="row">
+                        <h5 class="card-title col-10">Crossword X</h5>
+                        <div class="col-1 icon" (click)="delete(board, $event)">
+                            <i class="far fa-trash-alt"></i>
+                        </div>
+                    </div>
+                    <h6 class="card-subtitle mb-2 text-muted">Num Questions: {{board.questions.length}}</h6>
+                </div>
             </div>
         </div>
     </div>

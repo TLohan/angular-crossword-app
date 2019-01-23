@@ -56,7 +56,7 @@ describe('HomeComponent', () => {
 
         // act
         fixture.detectChanges();
-        const linkElements = fixture.debugElement.queryAll(By.css('a'));
+        const linkElements = fixture.debugElement.queryAll(By.directive(RouterLinkStubDirective));
 
         // assert
         expect(linkElements.length).toBe(BOARDS.length);
@@ -67,12 +67,12 @@ describe('HomeComponent', () => {
         mockBoardService.getBoards.and.returnValue(of(BOARDS));
         fixture.detectChanges();
         const url = ['/play', BOARDS[0].id];
-        const firstCard = fixture.debugElement.query(By.css('.card'));
-        const anchor = firstCard.query(By.css('a'));
-        const routerLink = firstCard.query(By.directive(RouterLinkStubDirective)).injector.get(RouterLinkStubDirective);
+        const boardList = fixture.debugElement.query(By.css('#boardList'));
+        const firstCard = boardList.query(By.css('.card'));
+        const routerLink = boardList.query(By.directive(RouterLinkStubDirective)).injector.get(RouterLinkStubDirective);
 
         // act
-        anchor.triggerEventHandler('click', null);
+        firstCard.triggerEventHandler('click', null);
 
         // assert
         expect(routerLink.navigatedTo).toEqual(url);

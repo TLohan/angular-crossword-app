@@ -1,28 +1,36 @@
 <div class="container-fluid" style="text-align: left;">
     <br>
-    <h4>Play Crossword</h4>
+    <div class="row">
+        <h4 class="col-8">Play Crossword</h4>
+        <div class="col-4 btn-group">
+            <button class="btn btn-outline-info btn-sm"  tabindex="-1">Check</button>
+            <button class="btn btn-outline-info btn-sm" tabindex="-1">Reveal</button>
+            <button class="btn btn-outline-info btn-sm" tabindex="-1">Reveal All</button>
+        </div>
+    </div>
     <hr>
     <div class="row">
         <div class="col-6 board">
             <div class="d-flex justify-content-center align-items-center">
                 <div *ngFor="let row of board?.boardMap; let i = index" class="flex-row">
-                    <div *ngFor="let col of row; let j = index" class="cell emptyCell" (click)="selectCell(i, j)" id="{{'cell-' + i + '_'+ j}}">
-                        <div *ngIf="isClickable(i, j)">
-                            <p class="identifier" id="{{'identifier-'+ i + '_' + j}}"></p>
-                            <input type="text" maxlength="1" class="guess" id="{{'guess-' + i + '_' + j}}">
-                            <p class="letter" id="{{'letter-' + i + '_' + j}}"></p>
+                    <div *ngFor="let col of row; let j = index" class="cell emptyCell"  id="{{'cell-' + i + '_'+ j}}">
+                        <div *ngIf="isClickable(i, j)" (click)="selectCell(i, j)">
+                            <p class="identifier"></p>
+                            <p class="letter"></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-6 questions">
-            {{selectedOrientation}}
-            <div class="card" *ngIf="selectedQuestion">
-                <div class="card-body d-flex question">
+        <div class="col-6 questions" id="questions">
+            <div class="card" >
+                <div class="card-body d-flex question" *ngIf="selectedQuestion">
                     <p class="text-secondary">{{selectedQuestion?.identifier}}</p>
-                    <h6>{{selectedQuestion?.clue}}</h6>
+                    <p>{{selectedQuestion?.clue}}</p>
                     <p class="text-secondary">({{selectedQuestion?.answer.length}})</p>
+                </div>
+                <div class="card-body question" *ngIf="!selectedQuestion">
+                    Welcome! Please select a cell or question to begin playing.
                 </div>
             </div>
             <br>
@@ -30,14 +38,14 @@
             <h4>Questions</h4>
             <div class="row">
                 <div class="col-6 across">
-                    <p>Across</p>
-                    <div *ngFor="let question of questionsAcross">
+                    <h6>Across</h6>
+                    <div *ngFor="let question of questionsAcross; let i = index" class="questionItem" (click)="selectQuestion(question)" id="{{'question-' + question.identifier}}">
                        {{question.identifier}} {{question?.clue}} ({{question?.answer.length}})
                     </div>
                 </div>
                 <div class="col-6 down">
-                    <p>Down</p>
-                    <div *ngFor="let question of questionsDown">
+                    <h6>Down</h6>
+                    <div *ngFor="let question of questionsDown; let i = index" class="questionItem" (click)="selectQuestion(question)" id="{{'question-' + question.identifier}}">
                         {{question.identifier}} {{question?.clue}} ({{question?.answer.length}})
                     </div>
                 </div>

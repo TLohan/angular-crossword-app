@@ -1,7 +1,7 @@
 import { Component, OnInit, OnChanges, ViewChild, ElementRef } from '@angular/core';
 import { BoardService } from 'src/app/services/board.service';
 import { Board } from 'src/app/models/board/board';
-import { ActivatedRoute, Router, ParamMap } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Question } from 'src/app/models/question/question';
 import { QuestionMap } from 'src/app/models/question-map/question-map';
 
@@ -14,22 +14,102 @@ export class PlayComponent implements OnInit {
     board: Board;
     questionsDown: Question[] = [];
     questionsAcross: Question[] = [];
+    cycler = 0;
+    private _selectedCell: HTMLElement;
+    count = 0;
+    listener: EventListenerOrEventListenerObject;
 
-    selectedCell: HTMLElement;
+    get selectedCell(): HTMLElement {
+        return this._selectedCell;
+    }
 
+    set selectedCell(cell: HTMLElement) {
+        if (this._selectedCell) {
+            this._selectedCell.classList.remove('selectedCell');
+        }
+        this._selectedCell = cell;
+        if (cell) {
+            this._selectedCell.classList.add('selectedCell');
+        }
+    }
 
     questionMap: QuestionMap;
 
-    selectedQuestion: Question;
+    private _selectedQuestion: Question = null;
+
+    get selectedQuestion(): Question {
+        return this._selectedQuestion;
+    }
+
+    set selectedQuestion(question: Question) {
+        // add styling for selectedQuestionElement
+        if (this._selectedQuestion) {
+            const prevQuestion = document.getElementById(`question-${this._selectedQuestion.identifier}`);
+            prevQuestion.classList.remove('selectedQuestion');
+            prevQuestion.blur();
+        } else {
+            this.listen();
+        }
+        this._selectedQuestion = question;
+        const newQuestion = document.getElementById(`question-${this._selectedQuestion.identifier}`);
+        newQuestion.focus();
+        newQuestion.classList.add('selectedQuestion');
+    }
 
     selectedOrientation: string = null;
     clickableCells: number[][] = [];
 
-    constructor(private boardService: BoardService, private route: ActivatedRoute, private router: Router) {
+    constructor(private boardService: BoardService, private route: ActivatedRoute) {
     }
 
     ngOnInit(): void {
         this.getBoard();
+    }
+
+    populateSelectedCell(letter: string) {
+        const letterP = <HTMLElement>this.selectedCell.querySelector('.letter');
+        letterP.innerText = letter;
+    }
+
+    emptySelectedCell() {
+        const letterP = <HTMLElement>this.selectedCell.querySelector('.letter');
+        letterP.innerText = '';
+    }
+
+    focusOnNextCell(count: number) {
+        if (count >= 0 && (count <= this.selectedQuestion.answer.length - 1)) {
+            if (this.selectedQuestion.orientation === 'down') {
+                this.selectedCell = this.getElement(this.selectedQuestion.row, this.selectedQuestion.col + count);
+            } else {
+                this.selectedCell = this.getElement(this.selectedQuestion.row + count, this.selectedQuestion.col);
+            }
+        }
+    }
+
+    selectNextQuestion() {
+        const sortedQuestions = this.board.questions.sort(sortQuestions);
+        const currentIndex = sortedQuestions.findIndex(q => q.identifier === this.selectedQuestion.identifier);
+        const nextIndex = currentIndex + 1;
+        let nextQuestion: Question;
+        if (nextIndex < sortedQuestions.length) {
+            nextQuestion = sortedQuestions[nextIndex];
+        } else {
+            nextQuestion = sortedQuestions[0];
+        }
+        this.selectQuestion(nextQuestion);
+        this.cycler++;
+    }
+
+    selectQuestion(question: Question) {
+        this.selectedQuestion = new Question(question.location, question.clue, question.answer, question.orientation, question.identifier);
+        this.selectedOrientation = question.orientation;
+        this.selectHeadCell(this.selectedQuestion);
+        this.count = 0;
+    }
+
+    selectHeadCell(question: Question) {
+        const element = this.getElement(question.row, question.col);
+        this.selectedCell = element;
     }
 
     getBoard() {
@@ -55,9 +135,12 @@ export class PlayComponent implements OnInit {
             setTimeout(() => this.populateBoard());
         }, err => {
             console.error(err);
-        }, () => console.log('Done loading stuff')
+        }, () => {
+
+            }
         );
     }
+
 
     private getElement(row: number, col: number): HTMLElement {
         return document.getElementById(`cell-${row}_${col}`);
@@ -74,9 +157,10 @@ export class PlayComponent implements OnInit {
                 this.questionMap.addNode(element, question);
                 element.classList.add('occupiedCell', 'clickable');
                 element.classList.remove('emptyCell');
+                // show identifier
                 if (index === 0) {
-                    const identifierNode = document.getElementById(`identifier-${row}_${col}`);
-                    identifierNode.innerHTML = question.identifier;
+                    const identifierNode = <HTMLElement>element.querySelector('.identifier');
+                    identifierNode.innerHTML = question.identifier.split('')[0];
                 }
                 if (question.orientation === 'down') {
                     col++;
@@ -87,110 +171,87 @@ export class PlayComponent implements OnInit {
         });
     }
 
-    lastCellForQuestion(row: number, col: number): boolean {
-        const length = this.selectedQuestion.answer.length - 1;
-        const [qrow, qcol] = this.selectedQuestion.location.split('-');
-        if (this.selectedOrientation === 'down') {
-            return col === (+qcol + length);
-        } else {
-            return row === (+qrow + length);
-        }
+
+    listen() {
+        this.listener = (e: KeyboardEvent) => {
+            const keyCode = e.keyCode;
+            console.log(e.key);
+            if (keyCode === 9) {
+                // tab pressed
+                // pick next question
+                e.preventDefault();
+                this.count = 0;
+                this.selectNextQuestion();
+            } else if (keyCode === 8) {
+                // 'backspace'
+                // empty this cell listen for previous
+                this.emptySelectedCell();
+                if (this.count > 0) { --this.count; }
+                this.focusOnNextCell(this.count);
+            } else if (keyCode > 64  && keyCode < 91) {
+                // if keycode matches [a-Z]
+                // populate that cell with that key
+                // listen for next cell
+                this.populateSelectedCell(e.key);
+                if (this.count < this.selectedQuestion.answer.length) {
+                    this.count += 1;
+                }
+                this.focusOnNextCell(this.count);
+            } else if (keyCode >= 37 && keyCode <= 40) {
+                const [r, c] = this.selectedCell.id.split('-')[1].split('_');
+                let [row, col] = [+r, +c];
+                switch (keyCode) {
+                    case 37: {
+                        // left
+                        row--;
+                        break;
+                    }
+                    case 38: {
+                        // up
+                        col--;
+                        break;
+                    }
+                    case 39: {
+                        // right
+                        row++;
+                        break;
+                    }
+                    case 40: {
+                        // down
+                        col++;
+                        break;
+                    }
+                }
+                if (this.isClickable(row, col)) {
+                    this.selectCell(row, col);
+                }
+            }
+        };
+
+        document.addEventListener('keydown', this.listener);
     }
 
 
-    selectNextCell(thisElement: HTMLElement, row: number, col: number) {
-        if (!this.questionMap.isCrossroads(thisElement)) {
-            const question = this.questionMap.getQuestion(thisElement);
-            this.selectedOrientation = question.orientation;
-        } else {
-            this.questionMap.getQuestionByDirection(thisElement, this.selectedOrientation);
-            console.log('xroads');
-        }
-        try {
-            if (this.selectedOrientation === 'down') {
-                if (this.lastCellForQuestion(row, col)) {
-                    this.nextQuestion();
-                } else {
-                    console.log('next cell down');
-                    this.selectCell(row, col + 1);
-                }
-            } else {
-                if (this.lastCellForQuestion(row, col)) {
-                    this.nextQuestion();
-                } else {
-                    console.log('next cell across', row, col);
-                    this.selectCell(row + 1, col);
-                }
-            }
-        } catch (TypeError) {
-            console.log('next q');
-            this.nextQuestion();
-        }
-    }
 
-    nextQuestion() {
-        console.log('teser');
-        this.selectedCell.style.backgroundColor = 'yellow';
-        try {
-            if (this.selectedQuestion.orientation === 'down') {
-                const index = this.board.questionsDown.indexOf(this.selectedQuestion);
-                const nextIndex = index + 1;
-                if (nextIndex < this.board.questionsDown.length) {
-                    this.selectedQuestion = this.board.questionsDown[nextIndex];
-                } else {
-                    console.log('down error', nextIndex);
-                    throw(TypeError);
-                }
-            } else {
-                const index = this.board.questionsAcross.indexOf(this.selectedQuestion);
-                const nextIndex = index + 1;
-                if (nextIndex < this.board.questionsAcross.length) {
-                    this.selectedQuestion = this.board.questionsAcross[nextIndex];
-                } else {
-                    console.log('across error');
-                    throw(TypeError);
-                }
-            }
-            const q_loc = this.selectedQuestion.location.split('-');
-            console.log(q_loc);
-
-            this.selectCell(+q_loc[0], +q_loc[1]);
-        } catch (TypeError) {
-            console.log('error');
-            if (this.selectedOrientation === 'down') {
-                this.selectedQuestion = this.board.questionsAcross[0];
-                this.selectedOrientation = 'across';
-            } else {
-                this.selectedQuestion = this.board.questionsDown[0];
-                this.selectedOrientation = 'down';
-            }
-            const q_loc = this.selectedQuestion.location.split('-');
-            this.selectCell(+q_loc[0], +q_loc[1]);
-        }
-    }
-
-    selectCell(row: number, col: number): void {
-        if (this.selectedCell) { this.selectedCell.classList.remove('selectedCell'); }
+    selectCell(row: number, col: number) {
         const element = this.getElement(row, col);
         this.selectedCell = element;
-        this.selectedCell.classList.add('selectedCell');
-        if (this.selectedQuestion === undefined) {
-            this.selectedQuestion = this.questionMap.getQuestion(element);
-        } else if (!this.questionMap.isCrossroads(element)) {
-            this.selectedQuestion = this.questionMap.getQuestion(element);
+        let q: Question;
+        if (!this.questionMap.isCrossroads(element)) {
+            q = this.questionMap.getQuestion(element);
         } else {
-            this.selectedQuestion = this.questionMap.getQuestionByDirection(element, this.selectedOrientation);
+            q = this.questionMap.getQuestionByDirection(element, this.selectedOrientation);
         }
+        this.selectedQuestion = new Question(q.location, q.clue, q.answer, q.orientation, q.identifier);
         this.selectedOrientation = this.selectedQuestion.orientation;
-        const letterNode = document.getElementById(`letter-${row}_${col}`);
-        const inputNode = <HTMLInputElement>document.getElementById(`guess-${row}_${col}`);
-        inputNode.addEventListener('keyup', () => {
-                const val = inputNode.value;
-                letterNode.innerHTML = val;
-                this.selectNextCell(element, row, col);
-            }
-        );
-        inputNode.focus();
+        let listenFrom: number;
+        if (this.selectedOrientation === 'down') {
+            listenFrom = col - this.selectedQuestion.col;
+        } else {
+            listenFrom = row - this.selectedQuestion.row;
+        }
+        console.log(listenFrom);
+        this.count = listenFrom;
     }
 
     isClickable(row: number, col: number): boolean {
@@ -198,5 +259,13 @@ export class PlayComponent implements OnInit {
             return (arr[0] === row && arr[1] === col);
         });
         return (ans !== -1);
+    }
+}
+
+function sortQuestions(q1: Question, q2: Question) {
+    if (q1.orientation === 'across' && q2.orientation === 'down') {
+        return -1;
+    } else {
+        return 1;
     }
 }
