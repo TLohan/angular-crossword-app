@@ -14,6 +14,7 @@ import { HomeComponent } from './components/home/home.component';
 import { RouterModule } from '@angular/router';
 import { PlayComponent } from './components/play/play.component';
 import { CreateCrosswordComponent } from './components/create/create-crossword.component';
+import { TimerPipe } from './pipes/timer.pipe';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { CreateCrosswordComponent } from './components/create/create-crossword.c
     CreateCrosswordComponent,
     CreateBoardComponent,
     AddQuestionsComponent,
-    PlayComponent
+    PlayComponent,
+    TimerPipe
   ],
   imports: [
     BrowserModule,
