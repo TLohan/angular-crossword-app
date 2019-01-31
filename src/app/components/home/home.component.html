@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <br>
     <div class="row">
-        <div *ngFor="let board of boards" id="boardList" class="col-3">
+        <div *ngFor="let board of boards" id="boardList" class="col-xs-12 col-sm-6 col-md-3">
             <div class="card" [routerLink]="['/play', board?.id]" routerLinkActive="router-link-active">
                 <div class="card-body">
                     <div class="row">

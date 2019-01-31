@@ -221,9 +221,9 @@ export class AddQuestionsComponent implements OnInit {
         
         if (this.addQuestionMode) {
             this.alteredCells.forEach(cell => {
-                cell.innerHTML = '';
                 cell.classList.add('emptyCell');
                 cell.classList.remove('occupiedCell');
+                cell.querySelector('.letter').textContent = '';
             });
             this.populateBoard();
             const answerArr = event.target.value.split('');
@@ -233,7 +233,8 @@ export class AddQuestionsComponent implements OnInit {
                 try {
                     const element = this.getElement(row, col);
                     this.alteredCells.push(element);
-                    element.innerHTML = `<p>${letter}</p>`;
+                    // element.innerHTML = `<p>${letter}</p>`;
+                    element.querySelector('.letter').textContent = letter;
                     if (letter !== '') {
                         element.classList.add('occupiedCell');
                         element.classList.remove('emptyCell');

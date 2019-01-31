@@ -1,0 +1,9 @@
+<div class="d-flex justify-content-md-end align-items-center">
+    <div class="d-none d-md-inline" style="margin-right: 5%;">
+        <span *ngIf="isLoggedIn" class="align-bottom text-light" style="margin-right: 15%; font-size: .9em;"><span class="text-secondary align-bottom">Logged in as:</span> {{getUsername()}}</span>
+    </div>
+    <div class="buttons">
+        <button type="button" class="btn btn-outline-info btn-sm" (click)="login()" *ngIf="!isLoggedIn">Login</button>  
+        <button type="button" class="btn btn-outline-warning btn-sm" (click)="logout()" *ngIf="isLoggedIn">Logout</button>
+    </div>
+</div>

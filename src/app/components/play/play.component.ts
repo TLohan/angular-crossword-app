@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Question } from 'src/app/models/question/question';
 import { QuestionMap } from 'src/app/models/question-map/question-map';
 import { CellMap } from 'src/app/models/cell-map/cell-map';
-import { timer } from 'rxjs';
 
 @Component({
     templateUrl: './play.component.html',
@@ -20,6 +19,8 @@ export class PlayComponent implements OnInit {
     count = 0;
     listener: EventListenerOrEventListenerObject;
     timer = 0;
+
+    private _timer: any;
 
     get selectedCell(): HTMLElement {
         return this._selectedCell;
@@ -52,6 +53,7 @@ export class PlayComponent implements OnInit {
             prevQuestion.blur();
         } else {
             this.listen();
+            this.startTimer();
         }
         this._selectedQuestion = question;
         const newQuestion = document.getElementById(`question-${this._selectedQuestion.identifier}`);
@@ -106,15 +108,16 @@ export class PlayComponent implements OnInit {
     }
 
     startTimer() {
-        setInterval(() => {
+        this._timer = setInterval(() => {
             this.timer++;
         }, 1000);
     }
 
+    stopTimer() {
+        clearInterval(this._timer);
+    }
+
     selectQuestion(question: Question) {
-        if (!this.selectedQuestion) {
-            this.startTimer();
-        }
         this.selectedQuestion = new Question(question.location, question.clue, question.answer, question.orientation, question.identifier);
         this.selectedQuestion.id = question.id;
         this.selectedOrientation = question.orientation;
@@ -218,11 +221,11 @@ export class PlayComponent implements OnInit {
                 // populate that cell with that key
                 // listen for next cell
                 this.populateSelectedCell(e.key);
-                if (this.checkIfComplete()) { alert(`Completed! In ${this.timer} seconds!`); }
                 if (this.count < this.selectedQuestion.answer.length) {
                     this.count += 1;
                 }
                 this.focusOnNextCell(this.count);
+                this.checkIfComplete();
             } else if (keyCode >= 37 && keyCode <= 40) {
                 // direction keys
                 const [r, c] = this.selectedCell.id.split('-')[1].split('_');
@@ -306,6 +309,9 @@ export class PlayComponent implements OnInit {
 
     private _revealQuestion(question: Question) {
         const cells = this.cellMap.getCells(question);
+        const questionElement = document.getElementById(`question-${question.identifier}`);
+        questionElement.classList.add('answered');
+        questionElement.classList.remove('unanswered');
         cells.forEach((cell, index) => {
             const letterP = cell.querySelector('.letter');
             const answer = question.answer[index];
@@ -319,7 +325,7 @@ export class PlayComponent implements OnInit {
         });
     }
 
-    checkIfComplete(): boolean {
+    isComplete(): boolean {
         return this.questionMap.nodes.every(node => {
             const letter = node.cell.querySelector('.letter').innerHTML;
             if (letter.toLowerCase() === node.answer.toLowerCase()) {
@@ -327,6 +333,14 @@ export class PlayComponent implements OnInit {
             }
         });
     }
+
+    checkIfComplete() {
+        if (this.isComplete()) {
+            this.stopTimer();
+            alert(`Congratulations! \n Finished in ${this.timer} seconds!`);
+        }
+    }
+
 }
 
 function sortQuestions(q1: Question, q2: Question) {
