@@ -1,14 +1,14 @@
 <div class="container-fluid" style="text-align: left;">
     <br>
-    <div class="row">
+    <!-- <div class="row">
         <h4 class="col-8">Play Crossword</h4>
         <div class="col-4 btn-group">
             <button class="btn btn-outline-info btn-sm" (click)="check()"  tabindex="-1">Check</button>
             <button class="btn btn-outline-info btn-sm" (click)="reveal()" tabindex="-1">Reveal</button>
             <button class="btn btn-outline-info btn-sm" (click)="revealAll()" tabindex="-1">Reveal All</button>
         </div>
-    </div>
-    <hr>
+    </div> -->
+    <!-- <hr> -->
     <div class="row">
 
         <!-- board -->
@@ -28,6 +28,8 @@
         <!-- questions -->
         <div class="col-sm-11 col-md-6 questions mt-4 mt-md-1" id="questions"> 
             <div class="row">
+
+                <!-- selected question -->
                 <div class="card bg-light text-info col-xs-10 col-md-9" >
                     <div class="card-body d-flex  align-items-center question" *ngIf="selectedQuestion">
                         <p class="text-secondary">{{selectedQuestion?.identifier}}</p>
@@ -43,7 +45,16 @@
                 </div>
             </div>
             <br>
-
+            
+            <!-- options -->
+            <div class="row">
+                <div class="btn-group col-9">
+                    <button class="btn btn-outline-info btn-sm" (click)="check()"  tabindex="-1">Check</button>
+                    <button class="btn btn-outline-info btn-sm" (click)="reveal()" tabindex="-1">Reveal</button>
+                    <button class="btn btn-outline-info btn-sm" (click)="revealAll()" tabindex="-1">Reveal All</button>
+                </div>
+            </div>
+            <br>
             <div class="row">
                 <div class="col-6 across">
                     <h6>Across</h6>
@@ -66,3 +77,5 @@
         </div>
     </div>    
 </div>
+
+<app-board-completed-modal id="modal" data-toggle="modal" data-target="#exampleModal" [timer]="timer"></app-board-completed-modal>

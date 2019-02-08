@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User, UserManagerSettings, UserManager } from 'oidc-client';
 import { Router } from '@angular/router';
-import { JSONP_ERR_WRONG_METHOD } from '@angular/common/http/src/jsonp';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable()
@@ -12,15 +12,18 @@ export class AuthService {
     private _userManager: UserManager;
     config: UserManagerSettings;
 
+    baseAppUrl = environment.baseAppUrl;
+
     constructor(private httpClient: HttpClient, private _router: Router) {
         this.config = {
-            // authority: 'https://securingangularappscourse-sts.azurewebsites.net',
             authority: 'https://tlohan.eu.auth0.com',
             client_id: 'JLigKfV71nyicgxpAdkoAmac0xi3YDHl',
-            redirect_uri: 'http://localhost:4200/assets/oidc-login-redirect.html',
+            redirect_uri:  `${this.baseAppUrl}/assets/oidc-login-redirect.html`,
+            // 'https://crossword-app-c79dd.firebaseapp.com/assets/oidc-login-redirect.html',
             scope: 'openid projects-api profile',
             response_type: 'id_token token',
-            post_logout_redirect_uri: 'http://localhost:4200/?postLogout=true'
+            post_logout_redirect_uri: `${this.baseAppUrl}/?postLogout=true`,
+            // 'https://crossword-app-c79dd.firebaseapp.com/?postLogout=true'
         };
 
 

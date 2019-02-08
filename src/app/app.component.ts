@@ -14,10 +14,12 @@ export class AppComponent implements OnInit {
 
   constructor(private _authService: AuthService, private _router: Router) {}
 
+  get isLoggedIn(): boolean {
+    return this._authService.isLoggedIn() || false;
+  }
+
   ngOnInit() {
-    console.log('hit');
     if (window.location.href.indexOf('?postLogout=true') > 0) {
-      console.log('hit2');
       this._authService.signoutRedirectCallback().then(() => {
         const url: string = this._router.url.substring(0, this._router.url.indexOf('?'));
         this._router.navigateByUrl(url);

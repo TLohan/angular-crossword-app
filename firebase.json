@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "public": "dist/crossword-app",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

@@ -3,7 +3,6 @@ import { Board } from 'src/app/models/board/board';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Question } from 'src/app/models/question/question';
 import { _localeFactory } from '@angular/core/src/application_module';
-import { BoardService } from 'src/app/services/board.service';
 
 @Component({
     templateUrl: './add-questions.component.html',
@@ -25,12 +24,14 @@ export class AddQuestionsComponent implements OnInit {
 
     @Output() finished: EventEmitter<boolean> = new EventEmitter();
 
-    selectedCell: HTMLElement;
+    _selectedCell: HTMLElement;
     selectedCol: number;
     selectedRow: number;
     addQuestionMode = false;
+    editQuestionMode = false;
+    questionUnderEdit: Question;
     questionFormGroup: FormGroup;
-    private _orientation = 'down';
+    private _orientation: string;
     questions: Question[] = [];
     @ViewChild('clue') clueField: ElementRef;
     @ViewChild('downLabel') downLabel?: ElementRef;
@@ -40,6 +41,16 @@ export class AddQuestionsComponent implements OnInit {
 
     constructor() {
 
+    }
+
+    set selectedCell(element: HTMLElement) {
+        if (this._selectedCell !== undefined) { this._selectedCell.classList.remove('selectedCell'); }
+        this._selectedCell = element;
+        element.classList.add('selectedCell');
+    }
+
+    get selectedCell(): HTMLElement {
+        return this._selectedCell;
     }
 
     get clue() { return this.questionFormGroup.get('clue'); }
@@ -60,9 +71,8 @@ export class AddQuestionsComponent implements OnInit {
             let col = +loc[1];
             const answer = question.answer.split('');
             answer.forEach(letter => {
-
                 const element = this.getElement(row, col);
-                element.innerHTML = `<p>${letter}</p>`;
+                element.querySelector('.letter').textContent = letter;
                 if (letter !== '') {
                     element.classList.add('occupiedCell');
                     element.classList.remove('emptyCell');
@@ -78,24 +88,22 @@ export class AddQuestionsComponent implements OnInit {
 
     set orientation(value: string) {
         this._orientation = value;
+        const downElement = document.getElementById('downLabel');
+        const acrossElement = document.getElementById('acrossLabel');
+        if (downElement && acrossElement) {
+            if (this.orientation === 'down') {
+                downElement.classList.add('active');
+                acrossElement.classList.remove('active');
+            } else {
+                downElement.classList.remove('active');
+                acrossElement.classList.add('active');
+            }
+        }
     }
 
     toggleOrientation(value: string): void {
         this.orientation = value;
-        const downElement = document.getElementById('downLabel');
-        const acrossElement = document.getElementById('acrossLabel');
-        if (this.orientation === 'down') {
-            downElement.classList.add('active');
-            acrossElement.classList.remove('active');
-        } else {
-            downElement.classList.remove('active');
-            acrossElement.classList.add('active');
-        }
-        this.alteredCells.forEach(cell => {
-            cell.innerHTML = '';
-            cell.classList.add('emptyCell');
-            cell.classList.remove('occupiedCell');
-        });
+        this.resetAlteredCells();
         this.populateBoard();
         const answer = this.answer.value;
 
@@ -103,26 +111,9 @@ export class AddQuestionsComponent implements OnInit {
 
         answerArr = answerArr.slice(0, this.maxAnswerLength);
         this.answer.setValue(answerArr.join(''));
-            let col = this.selectedCol;
-            let row = this.selectedRow;
-            answerArr.forEach((letter: string, index: number) => {
-                try {
-                    const element = this.getElement(row, col);
-                    this.alteredCells.push(element);
-                    element.innerHTML = `<p>${letter}</p>`;
-                    if (letter !== '') {
-                        element.classList.add('occupiedCell');
-                        element.classList.remove('emptyCell');
-                        if (this.orientation === 'down') {
-                            col++;
-                        } else {
-                            row++;
-                        }
-                    }
-                } catch (TypeError) {
-                    console.log('too long');
-                }
-            });
+        const col = this.selectedCol;
+        const row = this.selectedRow;
+        this.populateAnswer(answerArr, row, col);
     }
 
     get orientation(): string {
@@ -145,36 +136,21 @@ export class AddQuestionsComponent implements OnInit {
 
     selectCell(row: number, col: number): void {
         this.addQuestionMode = true;
+        this.resetForm();
+        this.resetAlteredCells();
+        this.selectedCell = this.getElement(row, col);
+        this.selectedRow = row;
+        this.selectedCol = col;
+        setTimeout(() => this.clueField.nativeElement.focus());
+    }
 
-        this.questionFormGroup = new FormGroup({
-            clue: new FormControl(),
-            answer: new FormControl()
-        });
-        this.populateBoard();
+    resetAlteredCells() {
         this.alteredCells.forEach(cell => {
-            cell.innerHTML = '';
+            cell.querySelector('.letter').textContent = '';
             cell.classList.add('emptyCell');
             cell.classList.remove('occupiedCell');
         });
-        this.clue.setValidators(Validators.required);
-        this.answer.setValidators([Validators.required]);
-
-        if (this.selectedCell !== undefined) { this.selectedCell.classList.remove('selectedCell'); }
-        const element = this.getElement(row, col);
-        this.selectedCell = element;
-        element.classList.add('selectedCell');
-        this.selectedRow = row;
-        this.selectedCol = col;
-        this.questionFormGroup.controls['clue'].setValue('');
-        this.questionFormGroup.controls['answer'].setValue('');
-        if (this.orientation === 'down') {
-            setTimeout(() => this.downLabel.nativeElement.classList.add('active'));
-            setTimeout(() => this.acrossLabel.nativeElement.classList.remove('active'));
-        } else {
-            setTimeout(() => this.downLabel.nativeElement.classList.remove('active'));
-            setTimeout(() => this.acrossLabel.nativeElement.classList.add('active'));
-        }
-        setTimeout(() => this.clueField.nativeElement.focus());
+        this.alteredCells = [];
     }
 
     get maxAnswerLength(): number {
@@ -191,11 +167,9 @@ export class AddQuestionsComponent implements OnInit {
         this.alteredCells = [];
         this.populateBoard();
         const location = `${this.selectedRow}-${this.selectedCol}`;
-        const clue = this.questionFormGroup.controls['clue'].value;
-        const answer = this.questionFormGroup.controls['answer'].value;
-        const question = new Question(location, clue, answer, this.orientation, '');
+        const question = new Question(location, this.clue.value, this.answer.value, this.orientation, '');
         this.questions.push(question);
-        // this.addQuestionMode = false;
+        this.resetForm();
     }
 
     checkValidity(): boolean {
@@ -218,42 +192,66 @@ export class AddQuestionsComponent implements OnInit {
 
     onKey(event: any) {
         console.log('triggered');
-        
         if (this.addQuestionMode) {
-            this.alteredCells.forEach(cell => {
-                cell.classList.add('emptyCell');
-                cell.classList.remove('occupiedCell');
-                cell.querySelector('.letter').textContent = '';
-            });
-            this.populateBoard();
+            this.resetAlteredCells();
             const answerArr = event.target.value.split('');
-            let col = this.selectedCol;
-            let row = this.selectedRow;
-            answerArr.forEach((letter: string, index: number) => {
-                try {
-                    const element = this.getElement(row, col);
-                    this.alteredCells.push(element);
-                    // element.innerHTML = `<p>${letter}</p>`;
-                    element.querySelector('.letter').textContent = letter;
-                    if (letter !== '') {
-                        element.classList.add('occupiedCell');
-                        element.classList.remove('emptyCell');
-                        if (this.orientation === 'down') {
-                            col++;
-                        } else {
-                            row++;
-                        }
-                    }
-                } catch (TypeError) {
-                    console.log('too long');
-                }
-            });
+            const col = this.selectedCol;
+            const row = this.selectedRow;
+            this.populateAnswer(answerArr, row, col);
         }
+    }
+
+    populateAnswer(answerArr: string[], row: number, col: number) {
+        answerArr.forEach((letter: string, index: number) => {
+            try {
+                const element = this.getElement(row, col);
+                this.alteredCells.push(element);
+                element.querySelector('.letter').textContent = letter;
+                if (letter !== '') {
+                    element.classList.add('occupiedCell');
+                    element.classList.remove('emptyCell');
+                    this.orientation === 'down' ? col++ : row++;
+                }
+            } catch (TypeError) {
+                console.log('too long');
+            }
+        });
+    }
+
+    resetForm(): void {
+        this.clue.setValue('');
+        this.answer.setValue('');
     }
 
     saveBoard(): void {
         this.board.questions = this.questions;
         this.finished.emit(true);
+    }
+
+    editQuestion(question: Question) {
+        this.addQuestionMode = false;
+        this.editQuestionMode = true;
+        this.orientation = question.orientation;
+        this.clue.setValue(question.clue);
+        this.answer.setValue(question.answer);
+        this.questionUnderEdit = this.questions.find(element => {
+            return element.location === question.location;
+        });
+        this.selectedCell = this.getElement(question.row, question.col);
+    }
+
+    submitEditedQuestion(): void {
+        this.questionUnderEdit.clue = this.clue.value;
+        this.questionUnderEdit.answer = this.answer.value;
+        this.questionUnderEdit.orientation = this.orientation;
+        this.resetForm();
+        this.editQuestionMode = false;
+    }
+
+    deleteQuestion(question: Question) {
+        this.questions = this.questions.filter(element => {
+            return element.clue !== question.clue;
+        });
     }
 
 }

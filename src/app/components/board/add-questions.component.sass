@@ -27,13 +27,14 @@ $sub-separator-blue: #9192fd
 
 .invalidFeedback
     color: red
-    font-size: .75em
+    font-size: .7em
     text-align: left
-    visibility: hidden
+    display: none
+    padding: 0
+    margin: 0
 
-#submitBtn
-    cursor: pointer
-
+.feedback
+    paddding: 0
 .emptyCell
     background-color: $empty-cell-color
 
@@ -80,3 +81,20 @@ $sub-separator-blue: #9192fd
 
 #answerMaxLengthValidation
     visibility: visible
+
+
+
+.question
+    .delete-icon, .edit-icon
+        visibility: hidden
+        cursor: pointer
+
+    .delete-icon
+        color: red
+
+    .edit-icon
+        color: blue
+        
+    &:hover
+        .edit-icon, .delete-icon
+            visibility: visible

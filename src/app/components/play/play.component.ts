@@ -96,6 +96,7 @@ export class PlayComponent implements OnInit {
 
     selectNextQuestion() {
         const sortedQuestions = this.board.questions.sort(sortQuestions);
+        console.log(sortedQuestions);
         const currentIndex = sortedQuestions.findIndex(q => q.identifier === this.selectedQuestion.identifier);
         const nextIndex = currentIndex + 1;
         let nextQuestion: Question;
@@ -131,33 +132,60 @@ export class PlayComponent implements OnInit {
     }
 
     getBoard() {
-        const id = +this.route.snapshot.paramMap.get('id');
+        const id = this.route.snapshot.paramMap.get('id');
         this.questionMap = new QuestionMap();
         this.cellMap = new CellMap();
-        this.boardService.getBoard(id).subscribe((data: Board) => {
-            this.board = new Board(15, 15);
-            this.board.fromJSON(data);
-            this.questionsDown = this.board.questionsDown;
-            this.questionsAcross = this.board.questionsAcross;
-            this.board.questions.forEach((question: Question) => {
-                const loc = question.location.split('-');
-                const row = +loc[0];
-                const col = +loc[1];
-                for (let i = 0; i < question.answer.length; i++) {
-                    if (question.orientation === 'down') {
-                        this.clickableCells.push([row, col + i]);
-                    } else {
-                        this.clickableCells.push([row + i, col]);
+        if (!isNaN(+id)) {
+            this.boardService.getBoard(+id).subscribe((data: Board) => {
+                this.board = new Board(15, 15);
+                this.board.fromJSON(data);
+                this.questionsDown = this.board.questionsDown;
+                this.questionsAcross = this.board.questionsAcross;
+                this.board.questions.forEach((question: Question) => {
+                    const loc = question.location.split('-');
+                    const row = +loc[0];
+                    const col = +loc[1];
+                    for (let i = 0; i < question.answer.length; i++) {
+                        if (question.orientation === 'down') {
+                            this.clickableCells.push([row, col + i]);
+                        } else {
+                            this.clickableCells.push([row + i, col]);
+                        }
                     }
-                }
-            });
-            setTimeout(() => this.populateBoard());
-        }, err => {
-            console.error(err);
-        }, () => {
+                });
+                setTimeout(() => this.populateBoard());
+            }, err => {
+                console.error(err);
+            }, () => {
 
-            }
-        );
+                }
+            );
+        } else {
+            this.boardService.getRandom().subscribe((data: Board) => {
+                this.board = new Board(15, 15);
+                this.board.fromJSON(data);
+                this.questionsDown = this.board.questionsDown;
+                this.questionsAcross = this.board.questionsAcross;
+                this.board.questions.forEach((question: Question) => {
+                    const loc = question.location.split('-');
+                    const row = +loc[0];
+                    const col = +loc[1];
+                    for (let i = 0; i < question.answer.length; i++) {
+                        if (question.orientation === 'down') {
+                            this.clickableCells.push([row, col + i]);
+                        } else {
+                            this.clickableCells.push([row + i, col]);
+                        }
+                    }
+                });
+                setTimeout(() => this.populateBoard());
+            }, err => {
+                console.error(err);
+            }, () => {
+
+                }
+            );
+        }
     }
 
 
@@ -337,7 +365,8 @@ export class PlayComponent implements OnInit {
     checkIfComplete() {
         if (this.isComplete()) {
             this.stopTimer();
-            alert(`Congratulations! \n Finished in ${this.timer} seconds!`);
+            const el = document.getElementById('modal');
+            el.click();
         }
     }
 
@@ -346,7 +375,12 @@ export class PlayComponent implements OnInit {
 function sortQuestions(q1: Question, q2: Question) {
     if (q1.orientation === 'across' && q2.orientation === 'down') {
         return -1;
+    } else if (q1.orientation === 'down' && q2.orientation === 'across') {
+        return 1;
     } else {
+        if (+q1.identifier[0] < +q2.identifier[0]) {
+            return -1;
+        }
         return 1;
     }
 }

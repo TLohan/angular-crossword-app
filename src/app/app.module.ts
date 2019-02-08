@@ -18,6 +18,13 @@ import { TimerPipe } from './pipes/timer.pipe';
 import { LoginComponent } from './components/login/login.component';
 import { CallbackComponent } from './components/callback/callback.component';
 import { AuthService } from './core/auth.service';
+import { LandingPageComponent } from './components/landing/landing-page.component';
+import { BoardCompletedModalComponent } from './components/play/board-completed-modal.component';
+import { NotFoundComponent } from './components/404/404.component';
+import { BoardComponent } from './components/create/board.component';
+import { AddQuestionsBetaComponent } from './components/create/add-questions.component';
+import { QuestionFormComponent } from './components/create/question-form.component';
+import { QuestionListComponent } from './components/create/question-list.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +37,14 @@ import { AuthService } from './core/auth.service';
     PlayComponent,
     TimerPipe,
     LoginComponent,
-    CallbackComponent
+    CallbackComponent,
+    LandingPageComponent,
+    BoardCompletedModalComponent,
+    NotFoundComponent,
+    BoardComponent,
+    AddQuestionsBetaComponent,
+    QuestionFormComponent,
+    QuestionListComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +55,8 @@ import { AuthService } from './core/auth.service';
       {path: '', component: HomeComponent},
       { path: 'create', component: CreateCrosswordComponent },
       { path: 'play/:id', component: PlayComponent },
-      { path: 'callback', component: CallbackComponent }
+      { path: 'callback', component: CallbackComponent },
+      { path: '**', component: NotFoundComponent }
     ])
   ],
   providers: [BoardService, AuthService],
