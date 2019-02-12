@@ -7,7 +7,7 @@ import { Question } from 'src/app/models/question/question';
 @Component({
     selector: 'app-board',
     templateUrl: 'board.component.html',
-    styleUrls: ['../board/add-questions.component.sass']
+    styleUrls: ['../board/add-questions.component.sass', './board.component.sass']
 })
 
 export class BoardComponent implements OnInit {
@@ -19,6 +19,7 @@ export class BoardComponent implements OnInit {
     private _answerArr: string[];
     private doubleLetter: any[] = [];
     private _orientation: string;
+    private _nextCell: HTMLElement;
     @Input()
     set orientation(value: string) {
         this._orientation = value;
@@ -52,7 +53,6 @@ export class BoardComponent implements OnInit {
 
     @Input()
     set board(value: Board) {
-        console.log('hit set board');
         this._board = value;
         this._board.populateBoardMap();
     }
@@ -73,6 +73,18 @@ export class BoardComponent implements OnInit {
 
     get selectedCell(): HTMLElement {
         return this._selectedCell;
+    }
+
+    get nextCell(): HTMLElement {
+        return this._nextCell;
+    }
+
+    set nextCell(value: HTMLElement) {
+        if (this.nextCell) {
+            this.nextCell.classList.remove('nextCell');
+        }
+        this._nextCell = value;
+        this.nextCell.classList.add('nextCell');
     }
 
     get questions(): Question[] { return this.board.questions; }
@@ -131,13 +143,18 @@ export class BoardComponent implements OnInit {
                         element.classList.add('bg-light');
                     }
                     this.orientation === 'down' ? col++ : row++;
+                    if (col < this.board.numCols && row < this.board.numRows) { this.nextCell = this.getElement(row, col); }
                 }
             });
+            if (this.answerArr.length === 0 && this.nextCell) {
+                this.nextCell.classList.remove('nextCell');
+            }
         }
     }
 
     resetAlteredCells(): void {
         this.alteredCells.forEach(cell => {
+            cell.classList.remove('currentElement');
             const letterElement = cell.querySelector('.letter');
             if (letterElement.textContent.length > 1) {
                 letterElement.textContent = letterElement.textContent.slice(0, 1);

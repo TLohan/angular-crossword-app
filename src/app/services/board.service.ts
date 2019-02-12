@@ -25,7 +25,7 @@ export class BoardService {
     saveBoard(board: Board): Observable<any> {
         const url = `${this.baseServerUrl}/xwords/new`;
         const body = board;
-        return this.http.post(url, body);
+        return this.http.post(url, body, {observe: 'response'});
     }
 
     deleteBoard(board: Board): Observable<any> {

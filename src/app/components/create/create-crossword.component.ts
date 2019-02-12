@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Board } from 'src/app/models/board/board';
 import { BoardService } from 'src/app/services/board.service';
 import { Router } from '@angular/router';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 
 @Component({
-    templateUrl: './create-crossword.component.html'
+    templateUrl: './create-crossword.component.html',
+    styleUrls: ['./create-crossword.component.sass']
 })
 export class CreateCrosswordComponent {
     board: Board;
@@ -21,10 +23,15 @@ export class CreateCrosswordComponent {
     }
 
     save() {
-        this.boardService.saveBoard(this.board).subscribe((data) => {
-            if (data) {
+        this.boardService.saveBoard(this.board).subscribe((res: HttpResponse<any>) => {
+            if (res.status === 201) {
                 this.router.navigate(['/']);
             }
-        });
+        },
+            (err: HttpErrorResponse) => {
+                console.log(err.error);
+                console.log(err.status);
+            }
+        );
     }
 }

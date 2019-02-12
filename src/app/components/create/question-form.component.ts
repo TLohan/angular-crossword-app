@@ -6,7 +6,7 @@ import { noConflict } from 'q';
 @Component({
     selector: 'app-question-form',
     templateUrl: 'question-form.component.html',
-    styleUrls: ['../board/add-questions.component.sass']
+    styleUrls: ['../board/add-questions.component.sass', 'question-form.component.sass']
 })
 
 export class QuestionFormComponent implements OnInit {
@@ -85,10 +85,6 @@ export class QuestionFormComponent implements OnInit {
     get answerField() { return this.questionFormGroup.get('answerField'); }
 
     checkValidity() {
-        console.log('');
-        console.log('cf: ', this.clueField.invalid);
-        console.log('af: ', this.answerField.invalid, this.answerField.errors);
-        console.log('cnflct: ', this.conflict);
         return this.clueField.invalid || this.answerField.invalid || this.conflict;
     }
 
@@ -96,19 +92,19 @@ export class QuestionFormComponent implements OnInit {
         if (flag) {
             if (this.clueField.invalid) {
                 document.getElementById('clueRequiredFeedback').style.display = 'inline';
-                document.getElementById('submitBtn').style.cursor = 'not-allowed';
+                document.querySelector<HTMLElement>('.formBtn').style.cursor = 'not-allowed';
             }
             if (this.answerField.errors && this.answerField.errors.required) {
                 document.getElementById('answerRequiredFeedback').style.display = 'inline';
-                document.getElementById('submitBtn').style.cursor = 'not-allowed';
+                document.querySelector<HTMLElement>('.formBtn').style.cursor = 'not-allowed';
             }
             if (this.conflict) {
-                document.getElementById('submitBtn').style.cursor = 'not-allowed';
+                document.querySelector<HTMLElement>('.formBtn').style.cursor = 'not-allowed';
             }
         } else {
             document.getElementById('clueRequiredFeedback').style.display = 'none';
             document.getElementById('answerRequiredFeedback').style.display = 'none';
-            document.getElementById('submitBtn').style.cursor = 'pointer';
+            document.querySelector<HTMLElement>('.formBtn').style.cursor = 'pointer';
         }
     }
 
@@ -117,7 +113,6 @@ export class QuestionFormComponent implements OnInit {
     }
 
     alphaOnly(event: KeyboardEvent) {
-        console.log('hit');
         const key = event.keyCode;
         if (((key >= 65 && key <= 90) || key === 8) && this.answerArr.length <= this.maxAnswerLength) {
             return true;
@@ -130,7 +125,7 @@ export class QuestionFormComponent implements OnInit {
 
     updateBoard() {
         const val: string = this.answerField.value;
-        this.answerArr = val.split('');
+        this.answerArr = val.toUpperCase().split('');
     }
 
     toggleOrientation(value: string): void {
@@ -140,7 +135,7 @@ export class QuestionFormComponent implements OnInit {
     editQuestion(question: Question) {
         this.editQuestionMode = true;
         this.clueField.setValue(question.clue);
-        this.answerField.setValue(question.answer);
+        this.answerField.setValue(question.answer.toUpperCase());
         this.orientation = question.orientation;
         this._questionUnderEdit = question;
         this.answerArr = question.answer.split('');
@@ -148,7 +143,7 @@ export class QuestionFormComponent implements OnInit {
 
     submitEditedQuestion() {
         this._questionUnderEdit.clue = this.clueField.value;
-        this._questionUnderEdit.answer = this.answerField.value;
+        this._questionUnderEdit.answer = this.answerField.value.toUpperCase();
         this._questionUnderEdit.orientation = this.orientation;
         this.resetForm();
         this.editQuestionMode = false;
@@ -158,7 +153,7 @@ export class QuestionFormComponent implements OnInit {
 
     submitNewQuestion() {
         const clue = this.clueField.value;
-        const answer = this.answerField.value;
+        const answer: string = this.answerField.value.toUpperCase();
         const newQuestion = {
             clue: clue,
             answer: answer,

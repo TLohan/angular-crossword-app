@@ -35,20 +35,20 @@
                 </div>
             </div>
         </div>
-        <div class="col-3 d-none d-md-block" style="text-align: left;">
-            <h2>Set Size</h2>
-            <hr>
-            <h6>Size: <strong>{{numCols}} Rows</strong> by <strong>{{numRows}} Columns</strong>.</h6>
-            <br>
- 
-            <div class="form-group row">
-                <button (click)="resizeBoard()" class="btn btn-info col-12">Resize</button>
+        <div class="col-3 d-none d-md-flex align-items-center" style="text-align: left;">
+            <div>
+                <h4 class="header">Set Size</h4>
+                <h6 class="sub-header">Size: <strong>{{numCols}} Rows</strong> by <strong>{{numRows}} Columns</strong>.</h6>
+                <br>
+     
+                <div class="form-group row">
+                    <button (click)="resizeBoard()" id="resizeBtn" class="btn btn-sm col-12">Resize</button>
+                </div>
+                <br>
+                <div class="form-group row">
+                    <button (click)="nextStep()" id="nextStepBtn" class="btn btn-success btn-sm col-12">Next</button>
+                </div>
             </div>
-            <br>
-            <div class="form-group row">
-                <button (click)="nextStep()" id="nextStepBtn" class="btn btn-success col-12">Next</button>
-            </div>
-
         </div>
     </div>
     <br>

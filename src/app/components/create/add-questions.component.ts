@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { Question } from 'src/app/models/question/question';
 import { Board } from 'src/app/models/board/board';
 import { BoardComponent } from './board.component';
@@ -29,7 +29,7 @@ export class AddQuestionsBetaComponent implements OnInit {
     editQuestionMode = false;
 
     @Input() board: Board;
-
+    @Output() save: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     get orientation(): string {
         return this._orientation;
@@ -67,6 +67,10 @@ export class AddQuestionsBetaComponent implements OnInit {
 
     ngOnInit() {
         this.orientation = 'down';
+        // this.board.questions = [
+        //     new Question('0-0', 'Question 1', 'ANSWER', 'across', '1A'),
+        //     new Question('0-0', 'Question 2', 'ANSWERTWO', 'down', '1D'),
+        // ];
     }
 
 
@@ -98,5 +102,9 @@ export class AddQuestionsBetaComponent implements OnInit {
         setTimeout(() => {
             this.boardComponent.populateBoard();
         }, 2);
+    }
+
+    saveCrossword() {
+        this.save.emit(true);
     }
 }

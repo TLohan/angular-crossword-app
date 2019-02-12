@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { BoardService } from 'src/app/services/board.service';
 import { Board } from 'src/app/models/board/board';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,7 +10,7 @@ import { CellMap } from 'src/app/models/cell-map/cell-map';
     templateUrl: './play.component.html',
     styleUrls: ['./play.component.sass']
 })
-export class PlayComponent implements OnInit {
+export class PlayComponent implements OnInit, OnDestroy {
 
     board: Board;
     questionsDown: Question[] = [];
@@ -60,7 +60,6 @@ export class PlayComponent implements OnInit {
         newQuestion.focus();
         newQuestion.classList.add('selectedQuestion');
     }
-
     selectedOrientation = 'across';
     clickableCells: number[][] = [];
 
@@ -69,6 +68,11 @@ export class PlayComponent implements OnInit {
 
     ngOnInit(): void {
         this.getBoard();
+    }
+
+    ngOnDestroy(): void {
+        console.log('listener destroyed');
+        document.removeEventListener('keydown', this.listener);
     }
 
     populateSelectedCell(letter: string) {
@@ -96,7 +100,6 @@ export class PlayComponent implements OnInit {
 
     selectNextQuestion() {
         const sortedQuestions = this.board.questions.sort(sortQuestions);
-        console.log(sortedQuestions);
         const currentIndex = sortedQuestions.findIndex(q => q.identifier === this.selectedQuestion.identifier);
         const nextIndex = currentIndex + 1;
         let nextQuestion: Question;
@@ -139,8 +142,8 @@ export class PlayComponent implements OnInit {
             this.boardService.getBoard(+id).subscribe((data: Board) => {
                 this.board = new Board(15, 15);
                 this.board.fromJSON(data);
-                this.questionsDown = this.board.questionsDown;
-                this.questionsAcross = this.board.questionsAcross;
+                this.questionsDown = this.board.questionsDown.sort(sortQuestions);
+                this.questionsAcross = this.board.questionsAcross.sort(sortQuestions);
                 this.board.questions.forEach((question: Question) => {
                     const loc = question.location.split('-');
                     const row = +loc[0];
@@ -208,7 +211,9 @@ export class PlayComponent implements OnInit {
                 // show identifier
                 if (index === 0) {
                     const identifierNode = <HTMLElement>element.querySelector('.identifier');
-                    identifierNode.innerHTML = question.identifier.split('')[0];
+                    const id = question.identifier.split('');
+                    id.pop();
+                    identifierNode.innerHTML = id.join('');
                 }
                 if (question.orientation === 'down') {
                     col++;
@@ -378,7 +383,13 @@ function sortQuestions(q1: Question, q2: Question) {
     } else if (q1.orientation === 'down' && q2.orientation === 'across') {
         return 1;
     } else {
-        if (+q1.identifier[0] < +q2.identifier[0]) {
+        const id1 = q1.identifier.split('');
+        id1.pop();
+        const ID1 = id1.join('');
+        const id2 = q2.identifier.split('');
+        id2.pop();
+        const ID2 = id2.join('');
+        if (+ID1 < +ID2) {
             return -1;
         }
         return 1;

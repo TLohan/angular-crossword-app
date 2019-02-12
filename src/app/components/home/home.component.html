@@ -15,4 +15,29 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-6">
+            <canvas 
+            baseChart 
+            [datasets]="data"
+            [labels]="labels" 
+            [chartType]="'horizontalBar'" 
+            [colors]="bgColors"
+            [options]="chartOptions">
+        </canvas>
+        </div>
+        <div class="col-6">
+                <canvas
+                baseChart
+                [chartType]="'line'"
+                [datasets]="chartData"
+                [labels]="chartLabels"
+                [options]="chartOptions"
+                [legend]="true"
+                (chartClick)="onChartClick($event)">
+            </canvas>
+        </div>
+    </div>
+    <h1>{{userData}}</h1>
 </div>
+

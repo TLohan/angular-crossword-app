@@ -4,7 +4,7 @@
         <div class="col-6">
             <div class="row d-block">
                 <app-question-form [conflict]="conflict" [addQuestionMode]="addQuestionMode" [editQuestionMode]="editQuestionMode" [(answerArr)]="answerArr" [maxAnswerLength]="maxAnswerLength" [(orientation)]="orientation" (addQuestion)="addQuestion($event)"></app-question-form>
-                <app-question-list [questions]="questions" (questionToDelete)="deleteQuestion($event)" (questionToEdit)="editQuestion($event)"></app-question-list>
+                <app-question-list [questions]="questions" (questionToDelete)="deleteQuestion($event)" (questionToEdit)="editQuestion($event)" (triggerCrosswordSave)="saveCrossword()"></app-question-list>
             </div>
         </div>
     </div>
