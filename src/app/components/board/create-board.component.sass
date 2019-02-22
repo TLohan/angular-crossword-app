@@ -2,8 +2,9 @@
 
 .cell 
     border: 1px solid #0074D9
-    height: 27px
-    width: 27px
+    height: 2.5vw
+    width: 2.5vw
+    display: block
 
     &:hover
         color: red
@@ -39,3 +40,27 @@
     background-color: #43A047
     color: white
     font-weight: 700
+
+// Small devices (landscape phones, 576px and up)
+// @media (max-width: 576px)
+//     .cell
+
+// // Medium devices (tablets, 768px and up)
+// @media (max-width: 768px)
+//     .row
+//         background-color: pink
+    
+
+// // Large devices (desktops, 992px and up)
+// @media (min-width: 992px)
+//     .row
+//         background-color: yellow
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px)
+    // .row
+    //     background-color: green
+    
+    .cell
+        height: 2vw
+        width: 2vw

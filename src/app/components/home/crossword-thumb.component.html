@@ -1,0 +1,16 @@
+<div class="card" [routerLink]="['/play', board?.id]" routerLinkActive="router-link-active">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <p class="card-title"># {{board.id}}</p>
+            <div class="icons">
+                <div class="icon d-inline" id="editIcon" (click)="edit(board, $event)">
+                    <i class="far fa-edit ml-2"></i>
+                </div>
+                <div class="icon d-inline" id="deleteIcon" (click)="delete(board, $event)">
+                    <i class="far fa-trash-alt ml-2"></i>
+                </div>                            
+            </div>
+        </div>
+        <p class="card-subtitle text-muted">Num Questions: {{board.questions.length}}</p>
+    </div>
+</div>

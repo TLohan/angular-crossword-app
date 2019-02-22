@@ -1,23 +1,27 @@
-import { Injectable } from '@angular/core';
-import { filter } from 'rxjs/operators';
+import { Injectable, Output } from '@angular/core';
 import * as auth0 from 'auth0-js';
+import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 
 @Injectable()
-export class AuthService {
-
-    private _idToken: string;
-    private _accessToken: string;
-    private _expiresAt: number;
+export class Auth2Service {
 
     userProfile: any;
+    userEmail: string;
+
+    private _accessToken: string;
+    private _idToken: string;
+    private _expiresAt: number;
+
+    baseAppUrl = environment.baseAppUrl;
 
     auth0 = new auth0.WebAuth({
-        clientID: 'JLigKfV71nyicgxpAdkoAmac0xi3YDHl',
         domain: 'tlohan.eu.auth0.com',
+        audience: 'localhost:60844',
+        clientID: 'JLigKfV71nyicgxpAdkoAmac0xi3YDHl',
+        redirectUri:  `${this.baseAppUrl}/callback`,
+        scope: 'openid profile get:boards',
         responseType: 'token id_token',
-        redirectUri: 'http://localhost:4200/callback',
-        scope: 'openid profile'
     });
 
 
@@ -45,27 +49,30 @@ export class AuthService {
 
     public handleAuthentication(): void {
         this.auth0.parseHash((err, authResult) => {
+            console.log(authResult);
             if (authResult && authResult.accessToken && authResult.idToken) {
                 window.location.hash = '';
                 this.localLogin(authResult);
-                this.router.navigate(['/']);
+                this.router.navigate(['/home']);
             } else if (err) {
-                this.router.navigate(['/']);
+                this.router.navigate(['']);
                 console.log(err);
             }
         });
     }
 
     private localLogin(authResult): void {
-        // Set isLoggedIn flag in localstorage
+        // set isLogggedIn flag in local storage
         localStorage.setItem('isLoggedIn', 'true');
-
-        // Set the time that the access tokwn will expire at
+        // set the time that the access token will expire at
         const expiresAt = (authResult.expiresIn * 1000) + new Date().getTime();
-
         this._accessToken = authResult.accessToken;
+        console.log(this.accessToken);
         this._idToken = authResult.idToken;
-        this._expiresAt = authResult.expiresAt;
+        this._expiresAt = expiresAt;
+        this.getProfile((err, profile) => {
+            this.userProfile = profile;
+        });
     }
 
     public renewTokens(): void {
@@ -73,41 +80,43 @@ export class AuthService {
             if (authResult && authResult.accessToken && authResult.idToken) {
                 this.localLogin(authResult);
             } else if (err) {
-                alert(`Could not get the new token (${err.error}: ${err.errorDescription})`);
+                alert(`Could not get a new token (${err.error}: ${err.errorDescription})`);
                 this.logout();
             }
         });
     }
 
     public logout(): void {
-        // remobve tokens and expiry time
+        // remove tokens and expiry time
         this._accessToken = '';
         this._idToken = '';
         this._expiresAt = 0;
-
-        // Remove isLoggedIn flag from localstorage
+        // remove isLoggedIn flag from localStorage
         localStorage.removeItem('isLoggedIn');
-
-        // Go back to home route
-        this.router.navigate(['/']);
+        // go back to home route
+        this.router.navigate(['/home']);
     }
 
-    public isAuthenticated(): boolean {
-        // check whether the current time is past the access token's expiry time.
+    isAuthenticated(): boolean {
+        // Check whether the current time is less than the access token's expiry time.
         return new Date().getTime() < this._expiresAt;
     }
 
-    public getProfile(cb): void {
-        if (!this._accessToken) {
-            throw new Error('Access Token must exist to access this profile.');
+    public getProfile(cb) {
+        if (!this.accessToken) {
+            throw new Error('Access token must exist to fetch profile.');
         }
 
         const self = this;
         this.auth0.client.userInfo(this._accessToken, (err, profile) => {
             if (profile) {
-                self.userProfile = profile;
+                this.userProfile = profile;
+                console.log('profile: ', profile);
+                this.userEmail = profile.email;
             }
+
             cb(err, profile);
         });
     }
+
 }

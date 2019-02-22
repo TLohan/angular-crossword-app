@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
     selector: 'app-navbar',
@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavbarComponent {
 
+    @Input() profile: any;
 
     setActive(linkIndex: number): void {
         const prevElement = document.querySelector('.active');

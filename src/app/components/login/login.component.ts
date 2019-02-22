@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'src/app/core/auth.service';
-import { Profile } from 'selenium-webdriver/firefox';
+import { Component, OnInit, Input } from '@angular/core';
+import { Auth2Service } from 'src/app/core/auth2.service';
 
 @Component({
     templateUrl: './login.component.html',
@@ -18,15 +17,33 @@ import { Profile } from 'selenium-webdriver/firefox';
 })
 export class LoginComponent implements OnInit {
 
+    @Input() profile: any;
 
-    constructor(private authService: AuthService) {
+    constructor(private authService: Auth2Service) {
     }
 
-    get isLoggedIn(): boolean {
-        return this.authService.isLoggedIn();
-    }
+
 
     ngOnInit(): void {
+        // if (localStorage.getItem('isLoggedIn') === 'true') {
+        //     this.authService.renewTokens();
+        //     this.isLoggedIn = true;
+        // } else {
+        //     this.isLoggedIn = false;
+        // }
+
+        // if (this.authService.userProfile) {
+        //     this.profile = this.authService.userProfile;
+        //   } else {
+        //     this.authService.getProfile((err, profile) => {
+        //       this.profile = profile;
+        //     });
+        // }
+        // console.log(this.profile);
+    }
+
+    get isLoggedIn() {
+        return localStorage.getItem('isLoggedIn') === 'true';
     }
 
     login() {
@@ -38,7 +55,9 @@ export class LoginComponent implements OnInit {
     }
 
     getUsername() {
-        return this.authService.user.profile.name;
+        if (this.profile) {
+            return this.profile.name;
+        }
     }
 
 }

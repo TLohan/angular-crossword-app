@@ -1,0 +1,10 @@
+<div class="wrapper">
+    <div class="h6 header">Best Times</div>
+    <div id="stats">
+        <div class="d-flex justify-content-around statRow" *ngFor="let stat of stats">
+            <p>{{today | date}}</p>
+            <p># {{stat.boardId}}</p> 
+            <p>{{stat.seconds | timer}}</p>
+        </div>
+    </div>
+</div>

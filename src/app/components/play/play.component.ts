@@ -1,26 +1,30 @@
-import { Component, OnInit, OnChanges, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, HostListener, AfterViewChecked } from '@angular/core';
 import { BoardService } from 'src/app/services/board.service';
 import { Board } from 'src/app/models/board/board';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Question } from 'src/app/models/question/question';
 import { QuestionMap } from 'src/app/models/question-map/question-map';
 import { CellMap } from 'src/app/models/cell-map/cell-map';
+import { FormGroup, FormControl, AbstractControl } from '@angular/forms';
+import { BoardStat } from 'src/app/models/board/board-stat';
+import { Auth2Service } from 'src/app/core/auth2.service';
 
 @Component({
     templateUrl: './play.component.html',
     styleUrls: ['./play.component.sass']
 })
-export class PlayComponent implements OnInit, OnDestroy {
+export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
 
-    board: Board;
-    questionsDown: Question[] = [];
-    questionsAcross: Question[] = [];
-    private _selectedCell: HTMLElement;
-    count = 0;
-    listener: EventListenerOrEventListenerObject;
-    timer = 0;
+    fakeInputFormGroup: FormGroup;
+    flag: boolean;
+    oldVal = '';
+    get cell_width(): number {
+        return this.board ? 90 / this.board.numRows : 0;
+    }
 
-    private _timer: any;
+    get cell_height(): number {
+        return this.board ?  90 / this.board.numCols : 0;
+    }
 
     get selectedCell(): HTMLElement {
         return this._selectedCell;
@@ -35,11 +39,6 @@ export class PlayComponent implements OnInit, OnDestroy {
             this._selectedCell.classList.add('selectedCell');
         }
     }
-
-    questionMap: QuestionMap;
-    cellMap: CellMap;
-
-    private _selectedQuestion: Question = null;
 
     get selectedQuestion(): Question {
         return this._selectedQuestion;
@@ -60,19 +59,71 @@ export class PlayComponent implements OnInit, OnDestroy {
         newQuestion.focus();
         newQuestion.classList.add('selectedQuestion');
     }
+
+    constructor(private boardService: BoardService, private route: ActivatedRoute, private _authService: Auth2Service) {
+    }
+
+    board: Board;
+    questionsDown: Question[] = [];
+    questionsAcross: Question[] = [];
+    private _selectedCell: HTMLElement;
+    count = 0;
+    headCell: HTMLElement;
+    browser: string;
+    listener: EventListenerOrEventListenerObject;
+    timer = 0;
+    @ViewChild('fakeInput') _fakeInput: ElementRef;
+
+    private _timer: any;
+
+    questionMap: QuestionMap;
+    cellMap: CellMap;
+
+    private _selectedQuestion: Question = null;
     selectedOrientation = 'across';
     clickableCells: number[][] = [];
 
-    constructor(private boardService: BoardService, private route: ActivatedRoute) {
+    inputListener: EventListenerOrEventListenerObject;
+    resizeListener: EventListenerOrEventListenerObject;
+
+    ngAfterViewChecked(): void {
+        const cells = document.querySelectorAll<HTMLElement>('.cell');
+        cells.forEach((cell: HTMLElement) => {
+            cell.style.height = `${cell.offsetWidth}px`;
+        });
+    }
+    @HostListener('window:resize', ['$event'])
+    sizeChange() {
+        const cells = document.querySelectorAll<HTMLElement>('.cell');
+        cells.forEach((cell: HTMLElement) => {
+            cell.style.height = `${cell.offsetWidth}px`;
+        });
     }
 
     ngOnInit(): void {
         this.getBoard();
+        this.resizeListener = this.sizeChange;
+        window.addEventListener('resize', this.resizeListener);
+        const cells = document.querySelectorAll<HTMLElement>('.cell');
+        cells.forEach((cell: HTMLElement) => {
+            cell.style.height = `${cell.offsetWidth}px`;
+        });
+
+        this.fakeInputFormGroup = new FormGroup({
+            fakeInput: new FormControl()
+        });
     }
+
+    get fakeInput(): AbstractControl {
+        return this.fakeInputFormGroup.get('fakeInput');
+    }
+
+
 
     ngOnDestroy(): void {
         console.log('listener destroyed');
         document.removeEventListener('keydown', this.listener);
+        document.removeEventListener('resize', this.resizeListener);
     }
 
     populateSelectedCell(letter: string) {
@@ -111,6 +162,19 @@ export class PlayComponent implements OnInit, OnDestroy {
         this.selectQuestion(nextQuestion);
     }
 
+    selectPrevQuestion() {
+        const sortedQuestions = this.board.questions.sort(sortQuestions);
+        const currentIndex = sortedQuestions.findIndex(q => q.identifier === this.selectedQuestion.identifier);
+        const prevIndex = currentIndex - 1;
+        let prevQuestion: Question;
+        if (prevIndex >= 0) {
+            prevQuestion = sortedQuestions[prevIndex];
+        } else {
+            prevQuestion = sortedQuestions[sortedQuestions.length - 1];
+        }
+        this.selectQuestion(prevQuestion);
+    }
+
     startTimer() {
         this._timer = setInterval(() => {
             this.timer++;
@@ -119,6 +183,16 @@ export class PlayComponent implements OnInit, OnDestroy {
 
     stopTimer() {
         clearInterval(this._timer);
+    }
+
+    triggerKeyboard() {
+        console.log('t');
+        this._fakeInput.nativeElement.focus();
+        if (!this.listener) { this.listen(); }
+    }
+
+    hf() {
+        console.log('focus');
     }
 
     selectQuestion(question: Question) {
@@ -132,6 +206,7 @@ export class PlayComponent implements OnInit, OnDestroy {
     selectHeadCell(question: Question) {
         const element = this.getElement(question.row, question.col);
         this.selectedCell = element;
+        this.fakeInput.setValue('');
     }
 
     getBoard() {
@@ -156,7 +231,9 @@ export class PlayComponent implements OnInit, OnDestroy {
                         }
                     }
                 });
-                setTimeout(() => this.populateBoard());
+                setTimeout(() => {
+                    this.populateBoard();
+                });
             }, err => {
                 console.error(err);
             }, () => {
@@ -234,8 +311,31 @@ export class PlayComponent implements OnInit, OnDestroy {
 
 
     listen() {
+        this.inputListener = (e: Event) => {
+            if (e instanceof KeyboardEvent) {
+                console.log('keyboard event');
+            } else {
+                console.log('input event triggered');
+            }
+            // const key = e['data'].pop();
+            console.log(e);
+            if (e['data']) {
+                const letter = e['isComposing'] ? e['data'].split('').pop() : e['data'];
+                console.log('letter: ', letter);
+                const keyCode = +letter.toUpperCase().charCodeAt(0);
+                console.log('kc: ', typeof(keyCode));
+            } else {
+                const data = e.target['value'];
+                console.log(data);
+            }
+        };
+
         this.listener = (e: KeyboardEvent) => {
+            console.log('keyboardevnt triggered');
             const keyCode = e.keyCode;
+            console.log(e);
+            console.log(keyCode);
+            this.flag = true;
             if (keyCode === 9) {
                 // tab pressed
                 // pick next question
@@ -288,11 +388,35 @@ export class PlayComponent implements OnInit, OnDestroy {
                 if (this.isClickable(row, col)) {
                     this.selectCell(row, col);
                 }
+            } else if (keyCode === 229) {
+                // keyboard event doesnt work
+                this.flag = false;
+                this.oldVal = this.fakeInput.value || '';
             }
         };
         document.addEventListener('keydown', this.listener);
+        // document.addEventListener('input', this.inputListener);
     }
 
+    grep(flag: boolean) {
+        if (!flag) {
+            console.log(this.flag);
+            console.log(this.oldVal);
+            console.log(this.fakeInput.value);
+            let dict = {};
+            const newVal: string = this.fakeInput.value;
+            if (newVal.length >= this.oldVal.length) {
+                const letter = newVal.split('').pop().toUpperCase();
+                dict = { key: letter };
+                dict['keyCode'] = letter.charCodeAt(0);
+            } else {
+                dict = { keyCode: 8 };
+            }
+            const event = new KeyboardEvent('keydown', dict);
+            document.dispatchEvent(event);
+            this.fakeInput.setValue('');
+        }
+    }
 
 
     selectCell(row: number, col: number) {
@@ -341,15 +465,17 @@ export class PlayComponent implements OnInit, OnDestroy {
     }
 
     private _revealQuestion(question: Question) {
-        const cells = this.cellMap.getCells(question);
-        const questionElement = document.getElementById(`question-${question.identifier}`);
-        questionElement.classList.add('answered');
-        questionElement.classList.remove('unanswered');
-        cells.forEach((cell, index) => {
-            const letterP = cell.querySelector('.letter');
-            const answer = question.answer[index];
-            letterP.textContent = answer;
-        });
+        if (question) {
+            const cells = this.cellMap.getCells(question);
+            const questionElement = document.getElementById(`question-${question.identifier}`);
+            questionElement.classList.add('answered');
+            questionElement.classList.remove('unanswered');
+            cells.forEach((cell, index) => {
+                const letterP = cell.querySelector('.letter');
+                const answer = question.answer[index];
+                letterP.textContent = answer;
+            });
+        }
     }
 
     revealAll() {
@@ -372,6 +498,13 @@ export class PlayComponent implements OnInit, OnDestroy {
             this.stopTimer();
             const el = document.getElementById('modal');
             el.click();
+            const boardStat = new BoardStat();
+            boardStat.boardId = this.board.id;
+            boardStat.seconds = this.timer;
+            boardStat.played = true;
+            boardStat.userId = this._authService.userProfile.name;
+            console.log(boardStat);
+            this.boardService.addBoardStat(boardStat).subscribe();
         }
     }
 

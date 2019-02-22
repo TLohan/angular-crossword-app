@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './core/auth.service';
 import { Router } from '@angular/router';
+import { Auth2Service } from './core/auth2.service';
 
 @Component({
   selector: 'app-root',
@@ -9,22 +10,36 @@ import { Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   title = 'crossword-app';
-
+  _isLoggedIn = false;
   firstLogin = false;
 
-  constructor(private _authService: AuthService, private _router: Router) {}
-
-  get isLoggedIn(): boolean {
-    return this._authService.isLoggedIn() || false;
+  get profile() {
+    return this._authService.userProfile;
   }
 
+  constructor(private _authService: Auth2Service, private _router: Router) {
+  }
+
+
   ngOnInit() {
-    if (window.location.href.indexOf('?postLogout=true') > 0) {
-      this._authService.signoutRedirectCallback().then(() => {
-        const url: string = this._router.url.substring(0, this._router.url.indexOf('?'));
-        this._router.navigateByUrl(url);
-      });
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        this._authService.renewTokens();
+        // this.isLoggedIn = true;
     }
+
+    // if (this._authService.userProfile) {
+    //     this.profile = this._authService.userProfile;
+    //   } else {
+    //     await this._authService.handleAuthentication();
+    //     this._authService.getProfile((err, profile) => {
+    //       this.profile = profile;
+    //     });
+    // }
+    // console.log(this.profile);
+  }
+
+  get isLoggedIn() {
+    return localStorage.getItem('isLoggedIn') === 'true';
   }
 
 }
