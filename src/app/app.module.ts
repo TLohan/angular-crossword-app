@@ -32,6 +32,9 @@ import { Auth2Service } from './core/auth2.service';
 import { CallbackComponent } from './components/login/callback.component';
 import { StatsWidgetComponent } from './components/home/stats-widget.component';
 import { CrosswordThumbComponent } from './components/home/crossword-thumb.component';
+import { ScopeGuardService } from './guards/scope-guard.service';
+import { AuthGuard } from './guards/auth.guard';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -62,12 +65,13 @@ import { CrosswordThumbComponent } from './components/home/crossword-thumb.compo
     AppRoutingModule,
     ChartsModule,
     BrowserAnimationsModule,
+    MatProgressSpinnerModule,
     ToastrModule.forRoot(),
     RouterModule.forRoot([
       {path: '', component: HomeComponent},
       {path: 'home', component: HomeComponent},
-      { path: 'create', component: CreateCrosswordComponent },
-      { path: 'play/:id', component: PlayComponent },
+      { path: 'create', component: CreateCrosswordComponent, canActivate: [ScopeGuardService], data: {expectedScopes: ['create:board']} },
+      { path: 'play/:id', component: PlayComponent},
       { path: 'callback', component: CallbackComponent },
       { path: '**', component: NotFoundComponent }
     ])

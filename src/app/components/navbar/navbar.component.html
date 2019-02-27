@@ -13,7 +13,7 @@
           <li class="nav-item" (click)="setActive(1)">
             <a class="nav-link" [routerLink]="['/play', 'random']" routerLinkActive="router-link-active" tabindex="-1">Play Random</a>
           </li>
-          <li class="nav-item" (click)="setActive(2)">
+          <li class="nav-item" (click)="setActive(2)" *ngIf="authService.userHasScopes(['create:board'])">
               <a class="nav-link" [routerLink]="['/create']" routerLinkActive="router-link-active" tabindex="-1" >Create</a>          
           </li>
       </ul>

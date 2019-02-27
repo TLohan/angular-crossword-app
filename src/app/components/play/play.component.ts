@@ -215,57 +215,35 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.cellMap = new CellMap();
         if (!isNaN(+id)) {
             this.boardService.getBoard(+id).subscribe((data: Board) => {
-                this.board = new Board(15, 15);
-                this.board.fromJSON(data);
-                this.questionsDown = this.board.questionsDown.sort(sortQuestions);
-                this.questionsAcross = this.board.questionsAcross.sort(sortQuestions);
-                this.board.questions.forEach((question: Question) => {
-                    const loc = question.location.split('-');
-                    const row = +loc[0];
-                    const col = +loc[1];
-                    for (let i = 0; i < question.answer.length; i++) {
-                        if (question.orientation === 'down') {
-                            this.clickableCells.push([row, col + i]);
-                        } else {
-                            this.clickableCells.push([row + i, col]);
-                        }
-                    }
-                });
-                setTimeout(() => {
-                    this.populateBoard();
-                });
-            }, err => {
-                console.error(err);
-            }, () => {
-
-                }
-            );
+                this._playBoard(data);
+            });
         } else {
             this.boardService.getRandom().subscribe((data: Board) => {
-                this.board = new Board(15, 15);
-                this.board.fromJSON(data);
-                this.questionsDown = this.board.questionsDown;
-                this.questionsAcross = this.board.questionsAcross;
-                this.board.questions.forEach((question: Question) => {
-                    const loc = question.location.split('-');
-                    const row = +loc[0];
-                    const col = +loc[1];
-                    for (let i = 0; i < question.answer.length; i++) {
-                        if (question.orientation === 'down') {
-                            this.clickableCells.push([row, col + i]);
-                        } else {
-                            this.clickableCells.push([row + i, col]);
-                        }
-                    }
-                });
-                setTimeout(() => this.populateBoard());
-            }, err => {
-                console.error(err);
-            }, () => {
-
-                }
-            );
+                this._playBoard(data);
+            });
         }
+    }
+
+    private _playBoard(data: Board): void {
+        this.board = new Board(15, 15);
+        this.board.fromJSON(data);
+        this.questionsDown = this.board.questionsDown.sort(sortQuestions);
+        this.questionsAcross = this.board.questionsAcross.sort(sortQuestions);
+        this.board.questions.forEach((question: Question) => {
+            const loc = question.location.split('-');
+            const row = +loc[0];
+            const col = +loc[1];
+            for (let i = 0; i < question.answer.length; i++) {
+                if (question.orientation === 'down') {
+                    this.clickableCells.push([row, col + i]);
+                } else {
+                    this.clickableCells.push([row + i, col]);
+                }
+            }
+        });
+        setTimeout(() => {
+            this.populateBoard();
+        });
     }
 
 
@@ -395,17 +373,13 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
             }
         };
         document.addEventListener('keydown', this.listener);
-        // document.addEventListener('input', this.inputListener);
     }
 
     grep(flag: boolean) {
         if (!flag) {
-            console.log(this.flag);
-            console.log(this.oldVal);
-            console.log(this.fakeInput.value);
             let dict = {};
             const newVal: string = this.fakeInput.value;
-            if (newVal.length >= this.oldVal.length) {
+            if (newVal && newVal.length >= this.oldVal.length) {
                 const letter = newVal.split('').pop().toUpperCase();
                 dict = { key: letter };
                 dict['keyCode'] = letter.charCodeAt(0);

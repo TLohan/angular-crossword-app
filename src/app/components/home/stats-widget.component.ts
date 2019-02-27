@@ -9,10 +9,24 @@ import { BoardStat } from 'src/app/models/board/board-stat';
 
 export class StatsWidgetComponent implements OnInit {
 
-    @Input() stats: BoardStat[];
+    @Input() _stats: BoardStat[];
     today  = Date.now();
+
+    get stats(): BoardStat[] {
+        if (this._stats) {
+            return this._stats.sort(sortByTime);
+        }
+        return null;
+    }
 
     constructor() { }
 
     ngOnInit() { }
+}
+
+function sortByTime(bs1: BoardStat, bs2: BoardStat) {
+    if (bs1.seconds > bs2.seconds) {
+        return 1;
+    }
+    return -1;
 }

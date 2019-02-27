@@ -13,6 +13,8 @@ export class HomeComponent implements OnInit {
 
     boards: Board[];
     boardStats: BoardStat[];
+    private _filterBy = 'all';
+    filteredBoards: Board[];
 
     get profile() {
         return this.authService.userProfile;
@@ -22,25 +24,65 @@ export class HomeComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        setTimeout(() => {
+        const x = setInterval(() => {
             if (this.authService.userProfile) {
-                this.boardService.getBoards().subscribe(data => {
-                    this.boards = data;
-                });
-
-                this.boardService.getBoardStatsForUser(this.authService.userProfile.name).subscribe(data => {
-                    this.boardStats = data;
-                });
+                this.getData();
+                clearInterval(x);
             }
-        }, 1000);
+        }, 50);
     }
 
     delete(board: Board) {
         this.boardService.deleteBoard(board).subscribe((response) => {
             this.boardService.getBoards().subscribe(data => {
                 this.boards = data;
+                this.filterCrosswords(this._filterBy);
             });
         });
+    }
+
+    private findBoardStat(board: Board): BoardStat {
+        return this.boardStats.find(bs => bs.boardId === board.id);
+    }
+
+    getData() {
+        this.boardService.getBoards().subscribe(data => {
+            this.boards = data;
+            this.filteredBoards = data;
+        });
+
+        this.boardService.getBoardStatsForUser(this.authService.userProfile.name).subscribe(data => {
+            this.boardStats = data;
+        });
+    }
+
+    filterCrosswords(value: string) {
+        this._filterBy = value;
+        switch (value) {
+            case 'all':
+                this.filteredBoards = this.boards;
+                break;
+            case 'played':
+                this.filteredBoards = this.boards.filter(b => {
+                    const stat = this.findBoardStat(b);
+                    if (stat) {
+                        return stat.played;
+                    }
+                    return false;
+                });
+                break;
+            case 'unplayed':
+                this.filteredBoards = this.boards.filter(b => {
+                    const stat = this.findBoardStat(b);
+                    if (stat) {
+                        return !stat.played;
+                    }
+                    return true;
+                });
+                break;
+            default:
+                break;
+        }
     }
 
 }

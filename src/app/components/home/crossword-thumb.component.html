@@ -3,10 +3,10 @@
         <div class="d-flex justify-content-between">
             <p class="card-title"># {{board.id}}</p>
             <div class="icons">
-                <div class="icon d-inline" id="editIcon" (click)="edit(board, $event)">
+                <div class="icon d-inline" id="editIcon" (click)="edit(board, $event)" *ngIf="authService.userHasScopes(['edit:board'])">
                     <i class="far fa-edit ml-2"></i>
                 </div>
-                <div class="icon d-inline" id="deleteIcon" (click)="delete(board, $event)">
+                <div class="icon d-inline" id="deleteIcon" (click)="delete(board, $event)" *ngIf="authService.userHasScopes(['delete:board'])">
                     <i class="far fa-trash-alt ml-2"></i>
                 </div>                            
             </div>

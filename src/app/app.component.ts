@@ -11,31 +11,19 @@ import { Auth2Service } from './core/auth2.service';
 export class AppComponent implements OnInit {
   title = 'crossword-app';
   _isLoggedIn = false;
-  firstLogin = false;
 
   get profile() {
     return this._authService.userProfile;
   }
 
   constructor(private _authService: Auth2Service, private _router: Router) {
+    this._authService.handleAuthentication();
   }
-
 
   ngOnInit() {
     if (localStorage.getItem('isLoggedIn') === 'true') {
         this._authService.renewTokens();
-        // this.isLoggedIn = true;
     }
-
-    // if (this._authService.userProfile) {
-    //     this.profile = this._authService.userProfile;
-    //   } else {
-    //     await this._authService.handleAuthentication();
-    //     this._authService.getProfile((err, profile) => {
-    //       this.profile = profile;
-    //     });
-    // }
-    // console.log(this.profile);
   }
 
   get isLoggedIn() {

@@ -1,4 +1,4 @@
-import { Injectable, Output } from '@angular/core';
+import { Injectable, Output, EventEmitter } from '@angular/core';
 import * as auth0 from 'auth0-js';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
@@ -6,12 +6,22 @@ import { Router } from '@angular/router';
 @Injectable()
 export class Auth2Service {
 
-    userProfile: any;
-    userEmail: string;
+    private _userProfile: any;
+
+    set userProfile(value: any) {
+        this._userProfile = value;
+    }
+
+    get userProfile() {
+        return this._userProfile;
+    }
 
     private _accessToken: string;
     private _idToken: string;
     private _expiresAt: number;
+
+    private _scopes: string;
+    private requestedScopes = 'openid profile edit:board delete:board create:board';
 
     baseAppUrl = environment.baseAppUrl;
 
@@ -20,7 +30,7 @@ export class Auth2Service {
         audience: 'localhost:60844',
         clientID: 'JLigKfV71nyicgxpAdkoAmac0xi3YDHl',
         redirectUri:  `${this.baseAppUrl}/callback`,
-        scope: 'openid profile get:boards',
+        scope: this.requestedScopes,
         responseType: 'token id_token',
     });
 
@@ -68,11 +78,20 @@ export class Auth2Service {
         const expiresAt = (authResult.expiresIn * 1000) + new Date().getTime();
         this._accessToken = authResult.accessToken;
         console.log(this.accessToken);
+        const scopes = authResult.scope || '';
         this._idToken = authResult.idToken;
         this._expiresAt = expiresAt;
         this.getProfile((err, profile) => {
             this.userProfile = profile;
         });
+        console.log(scopes);
+        this._scopes = JSON.stringify(scopes);
+        localStorage.setItem('scopes', this._scopes);
+    }
+
+    public userHasScopes(scopes: string[]): boolean {
+        const grantedScopes = JSON.parse(localStorage.getItem('scopes')).split(' ');
+        return scopes.every(scope => grantedScopes.includes(scope));
     }
 
     public renewTokens(): void {
@@ -111,8 +130,6 @@ export class Auth2Service {
         this.auth0.client.userInfo(this._accessToken, (err, profile) => {
             if (profile) {
                 this.userProfile = profile;
-                console.log('profile: ', profile);
-                this.userEmail = profile.email;
             }
 
             cb(err, profile);

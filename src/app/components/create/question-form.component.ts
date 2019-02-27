@@ -125,7 +125,9 @@ export class QuestionFormComponent implements OnInit {
 
     updateBoard() {
         const val: string = this.answerField.value;
-        this.answerArr = val.toUpperCase().split('');
+        if (val) {
+            this.answerArr = val.toUpperCase().split('');
+        }
     }
 
     toggleOrientation(value: string): void {

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Board } from 'src/app/models/board/board';
 import { BoardService } from 'src/app/services/board.service';
+import { Auth2Service } from 'src/app/core/auth2.service';
 
 @Component({
     selector: 'app-crossword-thumb',
@@ -13,7 +14,7 @@ export class CrosswordThumbComponent implements OnInit {
     @Input() board: Board;
     @Output() deleteBoard: EventEmitter<Board> = new EventEmitter();
 
-    constructor(private boardService: BoardService) { }
+    constructor(private boardService: BoardService, private authService: Auth2Service) { }
 
     ngOnInit() { }
 
