@@ -6,5 +6,5 @@ This app has two user roles with different permissions. Please login as an admin
 
 | Role  | Username | Password |
 | ------------- | ------------- | ----------- |
-| Standard  | test@example.com  | Test123!!! |
+| Standard  | hello@example.com  | Test123!!! |
 | Admin  | admin@crosswords.com  | Admin123! |
