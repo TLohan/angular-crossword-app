@@ -13,6 +13,8 @@ export class HomeComponent implements OnInit {
 
     boards: Board[];
     boardStats: BoardStat[];
+    recordTimes: BoardStat[] = [];
+
     private _filterBy = 'all';
     filteredBoards: Board[];
 
@@ -54,6 +56,15 @@ export class HomeComponent implements OnInit {
         this.boardService.getBoardStatsForUser(this.authService.userProfile.name).subscribe(data => {
             this.boardStats = data;
         });
+
+        this.boardService.getRecordStats().subscribe(data => {
+            this.recordTimes = data;
+        });
+    }
+
+    getRecordStat(board: Board): BoardStat {
+        const record: BoardStat = this.recordTimes.find(bs => bs.boardId === board.id);
+        return record;
     }
 
     filterCrosswords(value: string) {

@@ -1,0 +1,14 @@
+<div class="container-fluid body">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Please Wait....</mat-card-title>
+            <mat-card-subtitle>Finding an Opponent - {{numUsersOnline | async }} users online</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="d-flex justify-content-center">
+            <mat-spinner [strokeWidth]="15" [diameter]="100" id="loading-spinner"></mat-spinner>
+        </mat-card-content>
+        <mat-card-actions class="d-flex justify-content-center">
+            <button class="btn btn-warning" (click)="cancel()">Cancel</button>
+        </mat-card-actions>
+    </mat-card>
+</div>

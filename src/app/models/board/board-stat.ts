@@ -6,5 +6,6 @@ export class BoardStat {
     seconds: number;
     userId: string;
     played = false;
+    date: Date;
 
 }

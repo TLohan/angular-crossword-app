@@ -5,6 +5,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { ChartsModule } from 'ng2-charts';
 import { ToastrModule} from 'ngx-toastr';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -33,8 +34,16 @@ import { CallbackComponent } from './components/login/callback.component';
 import { StatsWidgetComponent } from './components/home/stats-widget.component';
 import { CrosswordThumbComponent } from './components/home/crossword-thumb.component';
 import { ScopeGuardService } from './guards/scope-guard.service';
-import { AuthGuard } from './guards/auth.guard';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatCardModule} from '@angular/material/card';
+import { RevealAnswerWarningModalComponent } from './components/play/reveal-answer-warning-modal.component';
+import { MobileSelectedQuestionWidgetComponent } from './components/play/mobile-selected-question-widget.component';
+import { WaitForOpponentModalComponent } from './components/race-mode/wait-for-opponent-modal/wait-for-opponent-modal.component';
+import { RunRaceModeComponent } from './components/race-mode/run-race-mode/run-race-mode.component';
+import { environment } from 'src/environments/environment';
+import { RaceModeService } from './services/race-mode.service';
+
+const socketConfig = environment.socketUrl;
 
 @NgModule({
   declarations: [
@@ -56,7 +65,11 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     QuestionListComponent,
     CallbackComponent,
     StatsWidgetComponent,
-    CrosswordThumbComponent
+    CrosswordThumbComponent,
+    RevealAnswerWarningModalComponent,
+    MobileSelectedQuestionWidgetComponent,
+    WaitForOpponentModalComponent,
+    RunRaceModeComponent
   ],
   imports: [
     BrowserModule,
@@ -66,12 +79,15 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     ChartsModule,
     BrowserAnimationsModule,
     MatProgressSpinnerModule,
+    MatCardModule,
     ToastrModule.forRoot(),
+    SocketIoModule.forRoot(socketConfig),
     RouterModule.forRoot([
       {path: '', component: HomeComponent},
       {path: 'home', component: HomeComponent},
       { path: 'create', component: CreateCrosswordComponent, canActivate: [ScopeGuardService], data: {expectedScopes: ['create:board']} },
       { path: 'play/:id', component: PlayComponent},
+      { path: 'raceMode', component: RunRaceModeComponent },
       { path: 'callback', component: CallbackComponent },
       { path: '**', component: NotFoundComponent }
     ])
@@ -80,6 +96,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     BoardService,
      AuthService,
      Auth2Service,
+     ScopeGuardService,
+     RaceModeService,
     { provide: HTTP_INTERCEPTORS, useClass: HeaderInterceptor, multi: true }
     ],
   bootstrap: [AppComponent]

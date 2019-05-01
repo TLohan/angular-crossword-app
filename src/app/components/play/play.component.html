@@ -6,24 +6,7 @@
 
             <!-- display above the board on mobile -->
             <div class="d-sm-none">
-                <div class="" >
-                    <div *ngIf="selectedQuestion" id="selectedQuestionMobile">
-                        <div id="back" (click)="selectPrevQuestion()">
-                            <i class="fas fa-step-backward text-info"></i>
-                        </div>
-                        <div class="card bg-light text-info" id="question">
-                            <div class="text-secondary">{{selectedQuestion?.identifier}}</div>
-                            <div id="clue">{{selectedQuestion?.clue}}</div>
-                            <div class="text-secondary">({{selectedQuestion?.answer.length}})</div>
-                        </div>
-                        <div id="next" (click)="selectNextQuestion()">
-                            <i class="fas fa-step-forward text-info"></i>
-                        </div>
-                    </div>
-                    <div class="card-body question" *ngIf="!selectedQuestion">
-                        Welcome! Please select a cell or question to begin playing.
-                    </div>
-                </div>
+                <app-mobile-selected-question-widget [selectedQuestion]="selectedQuestion" (changeQuestion)="changeQuestion($event)" ></app-mobile-selected-question-widget>
             </div>
 
             <!-- board -->
@@ -42,28 +25,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="d-flex justify-content-center" *ngIf="!board">
+                    <mat-spinner></mat-spinner>
+                </div>
 
             </div>
 
+            <!-- mobile only -->
             <div class="d-sm-none">
-                <div class="" >
-                    <div *ngIf="selectedQuestion" id="selectedQuestionMobile">
-                        <div id="back" (click)="selectPrevQuestion()">
-                            <i class="fas fa-step-backward text-info"></i>
-                        </div>
-                        <div class="card bg-light text-info" id="question">
-                            <div class="text-secondary">{{selectedQuestion?.identifier}}</div>
-                            <div id="clue">{{selectedQuestion?.clue}}</div>
-                            <div class="text-secondary">({{selectedQuestion?.answer.length}})</div>
-                        </div>
-                        <div id="next" (click)="selectNextQuestion()">
-                            <i class="fas fa-step-forward text-info"></i>
-                        </div>
-                    </div>
-                    <div class="card-body question" *ngIf="!selectedQuestion">
-                        Welcome! Please select a cell or question to begin playing.
-                    </div>
-                </div>
+                <app-mobile-selected-question-widget [selectedQuestion]="selectedQuestion" (changeQuestion)="changeQuestion($event)"></app-mobile-selected-question-widget>                
             </div>
 
             
@@ -71,7 +41,7 @@
             <div class="col-sm-11 col-md-6 questions mt-4 mt-md-1" id="questions"> 
                 <div id="questionsHeader" class="d-flex align-content-center justify-items-center">
                     
-                <!-- selected question -->
+                <!-- selected question | not shown on mobile -->
                     <div class="card bg-light text-info d-none d-sm-block" id="selectedQuestion">
                         <div class="card-body d-flex   align-items-center question" *ngIf="selectedQuestion">
                             <p class="text-secondary">{{selectedQuestion?.identifier}}</p>
@@ -92,8 +62,8 @@
                 <div class="row d-flex justify-content-center">
                     <div class="btn-group col-10">
                         <button class="btn btn-outline-info btn-sm" (click)="check()"  tabindex="-1">Check</button>
-                        <button class="btn btn-outline-info btn-sm" (click)="reveal()" tabindex="-1">Reveal</button>
-                        <button class="btn btn-outline-info btn-sm" (click)="revealAll()" tabindex="-1">Reveal All</button>
+                        <button class="btn btn-outline-info btn-sm" (click)="getConfirmationOnReveal('single')" tabindex="-1">Reveal</button>
+                        <button class="btn btn-outline-info btn-sm" (click)="getConfirmationOnReveal('all')" tabindex="-1">Reveal All</button>
                     </div>
                 </div>
                 <br>
@@ -118,9 +88,10 @@
                 </div>
             </div>
         </div>
-        <div [formGroup]="fakeInputFormGroup" id="fakeInputWrapper" style="border: 1px solid red">
-            <input id="fakeInput" #fakeInput type="password" (onfocus)="hf()" tabindex="0" autocomplete="off" formControlName="fakeInput" (keyup)="grep(flag)" maxlength="1"/>
+        <div [formGroup]="fakeInputFormGroup" id="fakeInputWrapper">
+            <input id="fakeInput" #fakeInput type="password" tabindex="0" autocomplete="off" formControlName="fakeInput" (keyup)="checkInput(flag)" maxlength="1"/>
         </div>
     </div>
 
 <app-board-completed-modal id="modal" data-toggle="modal" data-target="#exampleModal" [timer]="timer"></app-board-completed-modal>
+<app-reveal-answer-warning-modal id="revealAnswerWarningModal" data-toggle="modal" data-target="#exampleModal2" (revealAnswer)="revealAnswer($event)"></app-reveal-answer-warning-modal>

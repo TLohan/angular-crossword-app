@@ -1,0 +1,12 @@
+<div class="container">
+    <div class="wrapper" *ngIf="!hasOpponent">
+        <app-wait-for-opponent-modal [numUsersOnline]="numberUsersOnline"></app-wait-for-opponent-modal>
+    </div>
+
+    <p>
+        Online: {{numberUsersOnline | async }}
+        Namespace: {{namespaceId | async }}
+    </p>
+    <h2>Users Online</h2>
+    <p *ngFor="let userId of queue | async">{{userId}}</p>
+</div>

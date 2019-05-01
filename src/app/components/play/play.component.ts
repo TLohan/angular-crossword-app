@@ -18,6 +18,61 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
     fakeInputFormGroup: FormGroup;
     flag: boolean;
     oldVal = '';
+    board: Board;
+    questionsDown: Question[] = [];
+    questionsAcross: Question[] = [];
+    private _selectedCell: HTMLElement;
+    count = 0;
+    revealMode: string;
+    headCell: HTMLElement;
+    browser: string;
+    timer = 0;
+    private _timer: any;
+
+    constructor(private boardService: BoardService, private route: ActivatedRoute, private _authService: Auth2Service) {
+    }
+
+    @ViewChild('fakeInput') _fakeInput: ElementRef;
+    get fakeInput(): AbstractControl {
+        return this.fakeInputFormGroup.get('fakeInput');
+    }
+
+    validAttempt = true;
+
+    questionMap: QuestionMap;
+    cellMap: CellMap;
+
+    selectedOrientation = 'across';
+    clickableCells: number[][] = [];
+
+    listener: EventListenerOrEventListenerObject;
+    inputListener: EventListenerOrEventListenerObject;
+    resizeListener: EventListenerOrEventListenerObject;
+
+    private _selectedQuestion: Question = null;
+    set selectedQuestion(question: Question) {
+        // add styling for selectedQuestionElement
+        if (this._selectedQuestion) {
+            const prevQuestion = document.getElementById(`question-${this._selectedQuestion.identifier}`);
+            prevQuestion.classList.remove('selectedQuestion');
+            prevQuestion.blur();
+        } else {
+            this.startTimer();
+        }
+        this._selectedQuestion = question;
+        const newQuestion = document.getElementById(`question-${this._selectedQuestion.identifier}`);
+        newQuestion.focus();
+        newQuestion.classList.add('selectedQuestion');
+    }
+
+    @HostListener('window:resize', ['$event'])
+    sizeChange() {
+        const cells = document.querySelectorAll<HTMLElement>('.cell');
+        cells.forEach((cell: HTMLElement) => {
+            cell.style.height = `${cell.offsetWidth}px`;
+        });
+    }
+
     get cell_width(): number {
         return this.board ? 90 / this.board.numRows : 0;
     }
@@ -44,62 +99,6 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
         return this._selectedQuestion;
     }
 
-    set selectedQuestion(question: Question) {
-        // add styling for selectedQuestionElement
-        if (this._selectedQuestion) {
-            const prevQuestion = document.getElementById(`question-${this._selectedQuestion.identifier}`);
-            prevQuestion.classList.remove('selectedQuestion');
-            prevQuestion.blur();
-        } else {
-            this.listen();
-            this.startTimer();
-        }
-        this._selectedQuestion = question;
-        const newQuestion = document.getElementById(`question-${this._selectedQuestion.identifier}`);
-        newQuestion.focus();
-        newQuestion.classList.add('selectedQuestion');
-    }
-
-    constructor(private boardService: BoardService, private route: ActivatedRoute, private _authService: Auth2Service) {
-    }
-
-    board: Board;
-    questionsDown: Question[] = [];
-    questionsAcross: Question[] = [];
-    private _selectedCell: HTMLElement;
-    count = 0;
-    headCell: HTMLElement;
-    browser: string;
-    listener: EventListenerOrEventListenerObject;
-    timer = 0;
-    @ViewChild('fakeInput') _fakeInput: ElementRef;
-
-    private _timer: any;
-
-    questionMap: QuestionMap;
-    cellMap: CellMap;
-
-    private _selectedQuestion: Question = null;
-    selectedOrientation = 'across';
-    clickableCells: number[][] = [];
-
-    inputListener: EventListenerOrEventListenerObject;
-    resizeListener: EventListenerOrEventListenerObject;
-
-    ngAfterViewChecked(): void {
-        const cells = document.querySelectorAll<HTMLElement>('.cell');
-        cells.forEach((cell: HTMLElement) => {
-            cell.style.height = `${cell.offsetWidth}px`;
-        });
-    }
-    @HostListener('window:resize', ['$event'])
-    sizeChange() {
-        const cells = document.querySelectorAll<HTMLElement>('.cell');
-        cells.forEach((cell: HTMLElement) => {
-            cell.style.height = `${cell.offsetWidth}px`;
-        });
-    }
-
     ngOnInit(): void {
         this.getBoard();
         this.resizeListener = this.sizeChange;
@@ -114,11 +113,12 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
         });
     }
 
-    get fakeInput(): AbstractControl {
-        return this.fakeInputFormGroup.get('fakeInput');
+    ngAfterViewChecked(): void {
+        const cells = document.querySelectorAll<HTMLElement>('.cell');
+        cells.forEach((cell: HTMLElement) => {
+            cell.style.height = `${cell.offsetWidth}px`;
+        });
     }
-
-
 
     ngOnDestroy(): void {
         console.log('listener destroyed');
@@ -127,10 +127,12 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     populateSelectedCell(letter: string) {
-        this.selectedCell.classList.add('guessed');
-        this.selectedCell.classList.remove('wrong');
-        const letterP = <HTMLElement>this.selectedCell.querySelector('.letter');
-        letterP.innerText = letter;
+        if (this.selectedCell) {
+            this.selectedCell.classList.add('guessed');
+            this.selectedCell.classList.remove('wrong');
+            const letterP = <HTMLElement>this.selectedCell.querySelector('.letter');
+            letterP.innerText = letter;
+        }
     }
 
     emptySelectedCell() {
@@ -140,12 +142,20 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     focusOnNextCell(count: number) {
-        if (count >= 0 && (count <= this.selectedQuestion.answer.length - 1)) {
+        if (this.selectedQuestion && count >= 0 && (count <= this.selectedQuestion.answer.length - 1)) {
             if (this.selectedQuestion.orientation === 'down') {
                 this.selectedCell = this.getElement(this.selectedQuestion.row, this.selectedQuestion.col + count);
             } else {
                 this.selectedCell = this.getElement(this.selectedQuestion.row + count, this.selectedQuestion.col);
             }
+        }
+    }
+
+    changeQuestion(value: string) {
+        if (value === 'next') {
+            this.selectNextQuestion();
+        } else if (value === 'prev') {
+            this.selectPrevQuestion();
         }
     }
 
@@ -186,13 +196,9 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     triggerKeyboard() {
-        console.log('t');
+        // show mobile keyboard
         this._fakeInput.nativeElement.focus();
         if (!this.listener) { this.listen(); }
-    }
-
-    hf() {
-        console.log('focus');
     }
 
     selectQuestion(question: Question) {
@@ -289,30 +295,8 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
 
 
     listen() {
-        this.inputListener = (e: Event) => {
-            if (e instanceof KeyboardEvent) {
-                console.log('keyboard event');
-            } else {
-                console.log('input event triggered');
-            }
-            // const key = e['data'].pop();
-            console.log(e);
-            if (e['data']) {
-                const letter = e['isComposing'] ? e['data'].split('').pop() : e['data'];
-                console.log('letter: ', letter);
-                const keyCode = +letter.toUpperCase().charCodeAt(0);
-                console.log('kc: ', typeof(keyCode));
-            } else {
-                const data = e.target['value'];
-                console.log(data);
-            }
-        };
-
         this.listener = (e: KeyboardEvent) => {
-            console.log('keyboardevnt triggered');
             const keyCode = e.keyCode;
-            console.log(e);
-            console.log(keyCode);
             this.flag = true;
             if (keyCode === 9) {
                 // tab pressed
@@ -332,7 +316,7 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
                 // populate that cell with that key
                 // listen for next cell
                 this.populateSelectedCell(e.key);
-                if (this.count < this.selectedQuestion.answer.length) {
+                if (this.selectedQuestion && this.count < this.selectedQuestion.answer.length) {
                     this.count += 1;
                 }
                 this.focusOnNextCell(this.count);
@@ -367,7 +351,8 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
                     this.selectCell(row, col);
                 }
             } else if (keyCode === 229) {
-                // keyboard event doesnt work
+                // keyboard event doesnt work on mozilla for android
+                // keyboard event manually triggered on key up
                 this.flag = false;
                 this.oldVal = this.fakeInput.value || '';
             }
@@ -375,23 +360,24 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
         document.addEventListener('keydown', this.listener);
     }
 
-    grep(flag: boolean) {
+    checkInput(flag: boolean) {
+        // if flag is false then keyboard event didnt work.
+        // trigger one manually
         if (!flag) {
-            let dict = {};
+            let options = {};
             const newVal: string = this.fakeInput.value;
             if (newVal && newVal.length >= this.oldVal.length) {
                 const letter = newVal.split('').pop().toUpperCase();
-                dict = { key: letter };
-                dict['keyCode'] = letter.charCodeAt(0);
+                options = { key: letter };
+                options['keyCode'] = letter.charCodeAt(0);
             } else {
-                dict = { keyCode: 8 };
+                options = { keyCode: 8 };
             }
-            const event = new KeyboardEvent('keydown', dict);
+            const event = new KeyboardEvent('keydown', options);
             document.dispatchEvent(event);
             this.fakeInput.setValue('');
         }
     }
-
 
     selectCell(row: number, col: number) {
         const element = this.getElement(row, col);
@@ -401,7 +387,6 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
             q = this.questionMap.getQuestion(element);
         } else {
             q = this.questionMap.getQuestionByDirection(element, this.selectedOrientation);
-            console.log(this.selectedOrientation);
         }
         this.selectedQuestion = new Question(q.location, q.clue, q.answer, q.orientation, q.identifier);
         this.selectedQuestion.id = q.id;
@@ -434,8 +419,34 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
         });
     }
 
-    reveal() {
+    revealSingleAnswer() {
         this._revealQuestion(this.selectedQuestion);
+    }
+
+    revealAnswer(value: boolean) {
+        if (value) {
+            this.validAttempt = false;
+            switch (this.revealMode) {
+                case 'single':
+                    this.revealSingleAnswer();
+                    break;
+                case 'all':
+                    this.revealAll();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    getConfirmationOnReveal(mode: string) {
+        this.revealMode = mode;
+        if (this.validAttempt) {
+            const mod = document.getElementById('revealAnswerWarningModal');
+            mod.click();
+        } else {
+            this.revealAnswer(true);
+        }
     }
 
     private _revealQuestion(question: Question) {
@@ -456,6 +467,7 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.board.questions.forEach(question => {
             this._revealQuestion(question);
         });
+        this.checkIfComplete();
     }
 
     isComplete(): boolean {
@@ -470,16 +482,22 @@ export class PlayComponent implements OnInit, AfterViewChecked, OnDestroy {
     checkIfComplete() {
         if (this.isComplete()) {
             this.stopTimer();
-            const el = document.getElementById('modal');
-            el.click();
-            const boardStat = new BoardStat();
-            boardStat.boardId = this.board.id;
-            boardStat.seconds = this.timer;
-            boardStat.played = true;
-            boardStat.userId = this._authService.userProfile.name;
-            console.log(boardStat);
-            this.boardService.addBoardStat(boardStat).subscribe();
+            const completeModal = document.getElementById('modal');
+            completeModal.click();
+            if (this.validAttempt) {
+               this._saveStat();
+            }
         }
+    }
+
+    private _saveStat() {
+        const boardStat = new BoardStat();
+        boardStat.boardId = this.board.id;
+        boardStat.seconds = this.timer;
+        boardStat.played = true;
+        boardStat.userId = this._authService.userProfile.name;
+        boardStat.date = new Date(Date.now());
+        this.boardService.addBoardStat(boardStat).subscribe();
     }
 
 }

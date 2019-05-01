@@ -2,6 +2,7 @@ import { Injectable, Output, EventEmitter } from '@angular/core';
 import * as auth0 from 'auth0-js';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class Auth2Service {
@@ -31,11 +32,11 @@ export class Auth2Service {
         clientID: 'JLigKfV71nyicgxpAdkoAmac0xi3YDHl',
         redirectUri:  `${this.baseAppUrl}/callback`,
         scope: this.requestedScopes,
-        responseType: 'token id_token',
+        responseType: 'token id_token'
     });
 
 
-    constructor(public router: Router) {
+    constructor(public router: Router, private http: HttpClient) {
         this._idToken = '';
         this._accessToken = '';
         this._expiresAt = 0;
@@ -84,7 +85,6 @@ export class Auth2Service {
         this.getProfile((err, profile) => {
             this.userProfile = profile;
         });
-        console.log(scopes);
         this._scopes = JSON.stringify(scopes);
         localStorage.setItem('scopes', this._scopes);
     }
@@ -113,6 +113,11 @@ export class Auth2Service {
         // remove isLoggedIn flag from localStorage
         localStorage.removeItem('isLoggedIn');
         // go back to home route
+        this.auth0.logout({
+            returnTo: `${this.baseAppUrl}/`,
+            clientID: 'JLigKfV71nyicgxpAdkoAmac0xi3YDHl'
+        });
+        // this.http.get('https://tlohan.eu.auth0.com/v2/logout').subscribe();
         this.router.navigate(['/home']);
     }
 

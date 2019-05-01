@@ -58,6 +58,11 @@ export class BoardService {
         return this.http.post(url, body, { observe: 'response' });
     }
 
+    getRecordStats(): Observable<any> {
+        const url = `${this.baseServerUrl}/boardStats/bestTimes`;
+        return this.http.get(url);
+    }
+
     teapot(): Observable<any> {
         const url = `${this.baseServerUrl}/xwords/teapot`;
         return this.http.get(url);

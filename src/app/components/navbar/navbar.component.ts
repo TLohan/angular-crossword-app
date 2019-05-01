@@ -10,7 +10,7 @@ export class NavbarComponent {
 
     @Input() profile: any;
 
-    constructor(private authService: Auth2Service) {}
+    constructor(public authService: Auth2Service) { }
 
     setActive(linkIndex: number): void {
         const prevElement = document.querySelector('.active');
@@ -20,6 +20,10 @@ export class NavbarComponent {
         document.querySelector('button').click();
         const activeLink = <HTMLElement>document.querySelectorAll('.nav-item')[linkIndex];
         activeLink.classList.add('active');
+    }
+
+    enterRaceMode(): void {
+        console.log('clicked erm');
     }
 
 }

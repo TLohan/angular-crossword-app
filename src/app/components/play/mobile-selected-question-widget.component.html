@@ -1,0 +1,18 @@
+<div *ngIf="selectedQuestion" id="selectedQuestionMobile">
+    <div id="back" (click)="selectPrevQuestion()">
+        <i class="fas fa-step-backward text-info"></i>
+    </div>
+    <div class="card bg-light text-info" id="question">
+        <div class="text-secondary">{{selectedQuestion?.identifier}}</div>
+        <div id="clue">{{selectedQuestion?.clue}}</div>
+        <div class="text-secondary">({{selectedQuestion?.answer.length}})</div>
+    </div>
+    <div id="next" (click)="selectNextQuestion()">
+        <i class="fas fa-step-forward text-info"></i>
+    </div>
+</div>
+<div class="card bg-light text-info" id="noSelectedQuestion" *ngIf="!selectedQuestion">
+    <div class="card-body question">
+        Welcome! Please select a cell or question to begin playing.
+    </div>
+</div>

@@ -1,12 +1,18 @@
 <div class="container-fluid">
     <br>
     <div class="row">
-        <div class="col-4">
+
+        <!-- stats -->
+        <div class="col-xs-12 col-sm-4" id="statsWidget">
             <app-stats-widget [_stats]="boardStats"></app-stats-widget>
         </div>
-        <div class="col-8">
+
+        <!-- crosswords -->
+        <div class="col-xs-12 offset-sm-1 col-sm-7 offset-md-0 col-md-8">
             <div class="d-flex">
                 <div class="header h6">Crosswords</div>
+
+                <!-- filters -->
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-sm btn-outline-dark active" (click)="filterCrosswords('all')">
                         <input type="radio" name="crosswordsFilter" autocomplete="off"> All
@@ -19,11 +25,13 @@
                     </label>
                 </div>
             </div>
+
+            <!-- crossword thumbs -->
             <div class="row">
-                <div *ngFor="let board of filteredBoards" id="boardList" class="col-xs-12 col-sm-6 col-md-3 p-0">
-                    <app-crossword-thumb [board]="board" (deleteBoard)="delete(board)"></app-crossword-thumb>
+                <div *ngFor="let board of filteredBoards" id="boardList" class="col-xs-12 col-sm-12 col-md-3 p-0">
+                    <app-crossword-thumb [board]="board" [recordStat]="getRecordStat(board)" (deleteBoard)="delete(board)"></app-crossword-thumb>
                 </div>
-                <div *ngIf="!filteredBoards" class="col-12 d-flex align-content-center justify-content-center">
+                <div *ngIf="!filteredBoards" class="col-12 d-flex align-content-center justify-content-center spinner">
                     <mat-spinner></mat-spinner>
                 </div>
             </div>

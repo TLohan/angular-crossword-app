@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Board } from 'src/app/models/board/board';
 import { BoardService } from 'src/app/services/board.service';
 import { Auth2Service } from 'src/app/core/auth2.service';
+import { BoardStat } from 'src/app/models/board/board-stat';
 
 @Component({
     selector: 'app-crossword-thumb',
@@ -12,9 +13,11 @@ import { Auth2Service } from 'src/app/core/auth2.service';
 export class CrosswordThumbComponent implements OnInit {
 
     @Input() board: Board;
+    @Input() recordStat?: BoardStat;
+
     @Output() deleteBoard: EventEmitter<Board> = new EventEmitter();
 
-    constructor(private boardService: BoardService, private authService: Auth2Service) { }
+    constructor(private boardService: BoardService, public authService: Auth2Service) { }
 
     ngOnInit() { }
 

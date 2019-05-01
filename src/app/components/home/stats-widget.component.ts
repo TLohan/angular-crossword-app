@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
 import { BoardStat } from 'src/app/models/board/board-stat';
 
 @Component({
@@ -7,21 +7,32 @@ import { BoardStat } from 'src/app/models/board/board-stat';
     styleUrls: ['./stats-widget.component.sass']
 })
 
-export class StatsWidgetComponent implements OnInit {
+export class StatsWidgetComponent implements OnInit, AfterViewInit {
 
     @Input() _stats: BoardStat[];
-    today  = Date.now();
+
+    toggledDown = true;
 
     get stats(): BoardStat[] {
         if (this._stats) {
             return this._stats.sort(sortByTime);
         }
-        return null;
+        return [];
     }
 
     constructor() { }
 
     ngOnInit() { }
+
+    ngAfterViewInit() {
+        const element = document.getElementById('statsHeader');
+        element.click();
+        this.toggledDown = true;
+    }
+
+    toggle() {
+        this.toggledDown = !this.toggledDown;
+    }
 }
 
 function sortByTime(bs1: BoardStat, bs2: BoardStat) {

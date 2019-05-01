@@ -43,8 +43,8 @@
         <!-- submit or edit button -->
         <div class="form-group d-flex justify-content-center">
             <div class="" id="formBtns" (mouseenter)="mouseOverSubmit(true)" (mouseleave)="mouseOverSubmit(false)">
-                <button *ngIf="editQuestionMode" [disabled]="checkValidity()" (click)="submitEditedQuestion()" id="editBtn" style="width: 10vw;" class="btn formBtn">Edit</button>
-                <button *ngIf="!editQuestionMode" [disabled]="checkValidity()" (click)="submitNewQuestion()" id="submitBtn" style="width: 10vw" class="btn btn-sm formBtn">Submit</button>
+                <button *ngIf="editQuestionMode" [disabled]="checkValidity()" (click)="submitEditedQuestion()" id="editBtn" class="btn formBtn">Edit</button>
+                <button *ngIf="!editQuestionMode" [disabled]="checkValidity()" (click)="submitNewQuestion()" id="submitBtn"  class="btn btn-sm formBtn">Submit</button>
             </div>
         </div>
     </form>

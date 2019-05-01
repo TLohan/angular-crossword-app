@@ -6,7 +6,8 @@ import { QuestionFormComponent } from './question-form.component';
 
 @Component({
     selector: 'app-add-questions-beta',
-    templateUrl: 'add-questions.component.html'
+    templateUrl: 'add-questions.component.html',
+    styleUrls: ['add-questions.component.sass']
 })
 
 export class AddQuestionsBetaComponent implements OnInit {

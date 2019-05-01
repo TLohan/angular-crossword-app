@@ -1,25 +1,33 @@
 <div class="container-fluid" style="padding: 0;">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand header" href="#" tabindex="-1">Crosswords</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto col-8">
-          <li class="nav-item active" (click)="setActive(0)">
-            <a class="nav-link" [routerLink]="['/']" routerLinkActive="router-link-active"  tabindex="-1"   >Home</a>
-          </li>
-          <li class="nav-item" (click)="setActive(1)">
-            <a class="nav-link" [routerLink]="['/play', 'random']" routerLinkActive="router-link-active" tabindex="-1">Play Random</a>
-          </li>
-          <li class="nav-item" (click)="setActive(2)" *ngIf="authService.userHasScopes(['create:board'])">
-              <a class="nav-link" [routerLink]="['/create']" routerLinkActive="router-link-active" tabindex="-1" >Create</a>          
-          </li>
-      </ul>
-      <div class="col-4" style="padding-left: 0">
-        <app-login [profile]="profile"></app-login>
-      </div>
-      </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand header" href="#" tabindex="-1">Crosswords</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto col-8">
+                <li class="nav-item active" (click)="setActive(0)">
+                    <a class="nav-link" [routerLink]="['/']" routerLinkActive="router-link-active"
+                        tabindex="-1">Home</a>
+                </li>
+                <li class="nav-item" (click)="setActive(1)">
+                    <a class="nav-link" [routerLink]="['/play', 'random']" routerLinkActive="router-link-active"
+                        tabindex="-1">Play Random</a>
+                </li>
+                <li class="nav-item" (click)="setActive(2)">
+                    <a class="nav-link" [routerLink]="['/raceMode']" routerLinkActive="router-link-active"
+                        tabindex="-1">Race Mode</a>
+                </li>
+                <li class="nav-item" (click)="setActive(3)" *ngIf="authService.userHasScopes(['create:board'])">
+                    <a class="nav-link" [routerLink]="['/create']" routerLinkActive="router-link-active"
+                        tabindex="-1">Create</a>
+                </li>
+            </ul>
+            <div class="col-4" style="padding-left: 0">
+                <app-login [profile]="profile"></app-login>
+            </div>
+        </div>
     </nav>
-  </div>
+</div>
