@@ -1,0 +1,9 @@
+<div class="row d-flex justify-content-center">
+    <div class="btn-group col-10">
+        <button class="btn btn-outline-info btn-sm" (click)="check()" tabindex="-1">Check</button>
+        <button class="btn btn-outline-info btn-sm" (click)="getConfirmationOnReveal('single')"
+            tabindex="-1" [disabled]="!canReveal" >Reveal</button>
+        <button class="btn btn-outline-info btn-sm" (click)="getConfirmationOnReveal('all')" tabindex="-1">Reveal
+            All</button>
+    </div>
+</div>

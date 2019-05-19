@@ -1,0 +1,20 @@
+<div class="row">
+    <div class="col-6 across">
+        <h6>Across</h6>
+        <div *ngFor="let question of questionsAcross;" class="questionItem row" (click)="selectQuestion(question)"
+            id="{{'question-' + question.identifier}}" [ngClass]="checkIfAnswered(question)">
+            <p class="text-secondary identifier col-2">{{question.identifier}}</p>
+            <p class="clue col-8">{{question?.clue}}</p>
+            <p class="text-secondary length col-2">({{question?.answer.length}})</p>
+        </div>
+    </div>
+    <div class="col-6 down">
+        <h6>Down</h6>
+        <div *ngFor="let question of questionsDown;" class="questionItem row" (click)="selectQuestion(question)"
+            id="{{'question-' + question.identifier}}" [ngClass]="checkIfAnswered(question)">
+            <p class="text-secondary identifier col-2">{{question.identifier}}</p>
+            <p class="clue col-8">{{question?.clue}}</p>
+            <p class="text-secondary length col-2">({{question?.answer.length}})</p>
+        </div>
+    </div>
+</div>

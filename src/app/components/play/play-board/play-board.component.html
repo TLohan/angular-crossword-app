@@ -1,0 +1,24 @@
+<div class="wrapper d-flex flex-column" style="border-bottom: 1px solid black;">
+    <div class="boardRow" style="flex-grow: 1" *ngFor="let row of board?.boardMap; let i = index">
+        <div class="d-flex align-items-stretch">
+            <div style="flex-grow: 1" *ngFor="let col of row; let j = index;" class="cell emptyCell"
+                id="{{'cell-' + j + '_'+ i}}">
+                <div *ngIf="isClickable(j, i)" (click)="selectCell(j, i)">
+                    <div class="identifier"></div>
+                    <div class="letterWrapper">
+                        <p class="letter"> </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div [formGroup]="fakeInputFormGroup" id="fakeInputWrapper">
+    <input id="fakeInput" #fakeInput type="password" tabindex="0" autocomplete="off" formControlName="fakeInput"
+        (keyup)="checkInput(flag)" maxlength="1" />
+</div>
+<div class="d-flex justify-content-center" *ngIf="!board">
+    <mat-spinner></mat-spinner>
+</div>

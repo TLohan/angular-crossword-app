@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Question } from 'src/app/models/question/question';
+import { PlayService } from 'src/app/services/play.service';
 
 @Component({
     selector: 'app-mobile-selected-question-widget',
@@ -9,18 +10,29 @@ import { Question } from 'src/app/models/question/question';
 
 export class MobileSelectedQuestionWidgetComponent implements OnInit {
 
-    @Input() selectedQuestion: Question;
-    @Output() changeQuestion: EventEmitter<string> = new EventEmitter<string>();
+    private _selectedQuestion: Question;
 
-    constructor() { }
+    get selectedQuestion(): Question {
+        return this._selectedQuestion;
+    }
+
+    set selectedQuestion(value: Question) {
+        this.playService.changeQuestion(value);
+    }
+
+    constructor(private playService: PlayService) {
+        this.playService.questionChanged$.subscribe(question => {
+            this._selectedQuestion = question;
+        });
+     }
 
     ngOnInit() { }
 
     selectPrevQuestion() {
-        this.changeQuestion.emit('prev');
+        this.playService.selectPreviousQuestion();
     }
 
     selectNextQuestion() {
-        this.changeQuestion.emit('next');
+        this.playService.selectNextQuestion();
     }
 }

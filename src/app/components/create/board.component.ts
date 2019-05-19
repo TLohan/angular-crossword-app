@@ -3,6 +3,7 @@ import { Board } from 'src/app/models/board/board';
 import { EventListener } from '@angular/core/src/debug/debug_node';
 import { log } from 'util';
 import { Question } from 'src/app/models/question/question';
+import { Orientation } from '../play/orientation.enum';
 
 @Component({
     selector: 'app-board',
@@ -18,15 +19,15 @@ export class BoardComponent implements OnInit {
     private occupiedCells: HTMLElement[] = [];
     private _answerArr: string[];
     private doubleLetter: any[] = [];
-    private _orientation: string;
+    private _orientation: Orientation;
     private _nextCell: HTMLElement;
     @Input()
-    set orientation(value: string) {
+    set orientation(value: Orientation) {
         this._orientation = value;
         this.populateAnswer();
     }
 
-    get orientation(): string {
+    get orientation(): Orientation {
         return this._orientation;
     }
 

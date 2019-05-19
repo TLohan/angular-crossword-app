@@ -3,6 +3,7 @@ import { Board } from 'src/app/models/board/board';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Question } from 'src/app/models/question/question';
 import { _localeFactory } from '@angular/core/src/application_module';
+import { Orientation } from '../play/orientation.enum';
 
 @Component({
     templateUrl: './add-questions.component.html',
@@ -31,7 +32,7 @@ export class AddQuestionsComponent implements OnInit {
     editQuestionMode = false;
     questionUnderEdit: Question;
     questionFormGroup: FormGroup;
-    private _orientation: string;
+    private _orientation: Orientation;
     questions: Question[] = [];
     @ViewChild('clue') clueField: ElementRef;
     @ViewChild('downLabel') downLabel?: ElementRef;
@@ -86,7 +87,7 @@ export class AddQuestionsComponent implements OnInit {
         });
     }
 
-    set orientation(value: string) {
+    set orientation(value: Orientation) {
         this._orientation = value;
         const downElement = document.getElementById('downLabel');
         const acrossElement = document.getElementById('acrossLabel');
@@ -101,7 +102,7 @@ export class AddQuestionsComponent implements OnInit {
         }
     }
 
-    toggleOrientation(value: string): void {
+    toggleOrientation(value: Orientation): void {
         this.orientation = value;
         this.resetAlteredCells();
         this.populateBoard();
@@ -116,7 +117,7 @@ export class AddQuestionsComponent implements OnInit {
         this.populateAnswer(answerArr, row, col);
     }
 
-    get orientation(): string {
+    get orientation(): Orientation {
         return this._orientation;
     }
 
@@ -125,7 +126,7 @@ export class AddQuestionsComponent implements OnInit {
             clue: new FormControl(),
             answer: new FormControl(Validators.required)
         });
-        this.orientation = 'down';
+        this.orientation = Orientation.DOWN;
 
     }
 

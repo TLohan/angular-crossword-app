@@ -1,0 +1,45 @@
+<div class="container" (click)="triggerKeyboard()" style="text-align: left;">
+    <br>
+
+    <div class="row">
+
+        <!-- MOBILE-ONLY display above the board -->
+        <div class="d-sm-none mb-2">
+            <app-mobile-selected-question-widget></app-mobile-selected-question-widget>
+        </div>
+
+        <!-- left column -->
+        <div class="col-sm-12 col-md-6" id="board">
+            <app-play-board [board]="board" [mode]="PLAY_MODE" (cellMapPopulated)="setCellMap($event)"></app-play-board>
+            <app-progress-dashboard class="d-none d-sm-block"></app-progress-dashboard>
+        </div>
+        
+        
+        <!-- MOBILE-ONLY display below the board -->
+        <div class="d-md-none mt-2">
+            <app-mobile-selected-question-widget></app-mobile-selected-question-widget>
+        </div>
+
+        <div class="d-md-none col-sm-12" id="progress">
+            <app-progress-dashboard class="d-xs-none"></app-progress-dashboard>
+        </div>
+
+        <!-- right column -->
+        <div class="col-sm-11 col-md-6 questions mt-1" id="questions">
+            <div id="questionsHeader" class="row">
+                <!-- DESKTOP-ONLY -->
+                <app-desktop-selected-question-widget class="col-12"></app-desktop-selected-question-widget>
+            </div>
+            
+            <br>
+
+            <!-- options -->
+            <app-control-dashboard></app-control-dashboard>
+
+            <br>
+
+            <!-- questions-list -->
+            <app-questions-list [board]="board" [cellMap]="cellMap" ></app-questions-list>
+        </div>
+    </div>
+</div>

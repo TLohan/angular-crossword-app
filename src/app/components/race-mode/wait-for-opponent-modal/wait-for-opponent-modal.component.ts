@@ -19,7 +19,11 @@ export class WaitForOpponentModalComponent implements OnInit {
     }
 
     cancel() {
-        this.raceModeService.ngOnDestroy();
+        if (this.raceModeService.matchSocket) {
+            this.raceModeService.matchSocket.socket.disconnect();
+        }
+        this.raceModeService.socket.disconnect();
+        this.raceModeService.connected = false;
         this.router.navigate(['/']);
     }
 

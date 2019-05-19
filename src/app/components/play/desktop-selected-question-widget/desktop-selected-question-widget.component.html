@@ -1,0 +1,10 @@
+<div class="card bg-light text-info d-none d-sm-block" id="selectedQuestion">
+    <div class="card-body row" *ngIf="selectedQuestion">
+        <p class="text-secondary col-2" id="questionIdentifier">{{selectedQuestion?.identifier}}</p>
+        <p class="h5 col-8">{{selectedQuestion?.clue}}</p>
+        <p class="text-secondary col-2" id="questionLength">({{selectedQuestion?.answer.length}})</p>
+    </div>
+    <div class="card-body question" *ngIf="!selectedQuestion">
+        Welcome! Please select a cell or question to begin playing.
+    </div>
+</div>

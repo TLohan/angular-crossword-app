@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angula
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Question } from 'src/app/models/question/question';
 import { noConflict } from 'q';
+import { Orientation } from '../play/orientation.enum';
 
 @Component({
     selector: 'app-question-form',
@@ -13,7 +14,7 @@ export class QuestionFormComponent implements OnInit {
 
 
     questionFormGroup: FormGroup;
-    private _orientation: string;
+    private _orientation: Orientation;
     private _maxAnswerLength: number;
     private _questionUnderEdit: Question;
     private _answerArr: string[];
@@ -47,7 +48,7 @@ export class QuestionFormComponent implements OnInit {
     }
 
     @Input()
-    set orientation(value: string) {
+    set orientation(value: Orientation) {
         this._orientation = value;
         this.orientationChange.emit(this._orientation);
         const downElement = document.getElementById('downLabel');
@@ -63,7 +64,7 @@ export class QuestionFormComponent implements OnInit {
         }
     }
 
-    get orientation(): string {
+    get orientation(): Orientation {
         return  this._orientation;
     }
 
@@ -130,7 +131,7 @@ export class QuestionFormComponent implements OnInit {
         }
     }
 
-    toggleOrientation(value: string): void {
+    toggleOrientation(value: Orientation): void {
         this.orientation = value;
     }
 

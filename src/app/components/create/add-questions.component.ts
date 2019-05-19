@@ -3,6 +3,7 @@ import { Question } from 'src/app/models/question/question';
 import { Board } from 'src/app/models/board/board';
 import { BoardComponent } from './board.component';
 import { QuestionFormComponent } from './question-form.component';
+import { Orientation } from '../play/orientation.enum';
 
 @Component({
     selector: 'app-add-questions-beta',
@@ -20,7 +21,7 @@ export class AddQuestionsBetaComponent implements OnInit {
     questionUnderEdit: Question;
     get questions(): Question[] { return this.board.questions; }
     set questions(value: Question[]) { this.board.questions = value; }
-    private _orientation: string;
+    private _orientation: Orientation;
     answerArr: string[] = [];
 
     @ViewChild(BoardComponent) private boardComponent: BoardComponent;
@@ -32,11 +33,11 @@ export class AddQuestionsBetaComponent implements OnInit {
     @Input() board: Board;
     @Output() save: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-    get orientation(): string {
+    get orientation(): Orientation {
         return this._orientation;
     }
 
-    set orientation(value: string) {
+    set orientation(value: Orientation) {
         this._orientation = value;
     }
 
@@ -67,7 +68,7 @@ export class AddQuestionsBetaComponent implements OnInit {
     constructor() { }
 
     ngOnInit() {
-        this.orientation = 'down';
+        this.orientation = Orientation.DOWN;
         // this.board.questions = [
         //     new Question('0-0', 'Question 1', 'ANSWER', 'across', '1A'),
         //     new Question('0-0', 'Question 2', 'ANSWERTWO', 'down', '1D'),

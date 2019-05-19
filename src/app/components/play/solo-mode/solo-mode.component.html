@@ -1,0 +1,44 @@
+<div class="container" (click)="triggerKeyboard()" style="text-align: left;">
+    <br>
+
+    <div class="row">
+
+        <!-- MOBILE-ONLY display above the board -->
+        <div class="d-sm-none mb-2">
+            <app-mobile-selected-question-widget></app-mobile-selected-question-widget>
+        </div>
+
+        <!-- left column -->
+        <div class="col-sm-12 col-md-6" id="board">
+            <app-play-board [board]="board" [mode]="PLAY_MODE" (cellMapPopulated)="setCellMap($event)"></app-play-board>
+        </div>
+
+
+        <!-- MOBILE-ONLY display below the board -->
+        <div class="d-sm-none mt-2">
+            <app-mobile-selected-question-widget></app-mobile-selected-question-widget>
+        </div>
+
+        <!-- right column -->
+        <div class="col-sm-11 col-md-6 questions mt-4 mt-md-1" id="questions">
+            <div id="questionsHeader" class="row">
+                <!-- DESKTOP-ONLY -->
+                <app-desktop-selected-question-widget class="col-10"></app-desktop-selected-question-widget>
+
+                <app-timer-widget class="col-2"></app-timer-widget>
+            </div>
+
+            <br>
+
+            <!-- options -->
+            <app-control-dashboard [mode]="PLAY_MODE"></app-control-dashboard>
+
+            <br>
+
+            <!-- questions-list -->
+            <app-questions-list [board]="board" [cellMap]="cellMap"></app-questions-list>
+        </div>
+    </div>
+
+
+</div>

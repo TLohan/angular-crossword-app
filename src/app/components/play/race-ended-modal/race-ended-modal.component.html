@@ -1,0 +1,19 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="exampleModalLabel">🏁 Race Ended! 🏁</h3>
+</div>
+<div class="modal-body" style="text-align: center">
+    <div *ngIf="wonMatch">
+        <h4>🎉🎉🎉 You Won! 🎉🎉🎉 </h4>
+        <h6>You: {{ownProgress}}%</h6>
+        <h6>Opponent: {{opponentProgress}}%</h6>
+    </div>
+    <div *ngIf="!wonMatch">
+        <h4>☹️☹️☹️ You Lost! ☹️☹️☹️ </h4>
+        <h6>You: {{ownProgress}}%</h6>
+        <h6>Opponent: {{opponentProgress}}%</h6>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="playAgain()">Play Again</button>
+    <button type="button" class="btn btn-primary" (click)="refuseReplay()">Home</button>
+</div>

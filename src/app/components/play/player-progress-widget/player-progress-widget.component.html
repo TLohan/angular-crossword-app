@@ -1,0 +1,14 @@
+<div id="playerTwoProgress" class="row progressWidget">
+    <div class="col-9">
+        <div class="d-flex justify-content-between">
+            <p class="mb-0">{{playerName}}</p>
+            <p class="mb-0">{{value}}%</p>
+        </div>
+        <mat-progress-bar mode="determinate" value={{value}} color={{color}}></mat-progress-bar>
+    </div>
+    <div class="col-3">
+        <p class="btn btn-sm btn-warning" class="revealElement" matBadge="{{revealsRemaining}}" matBadgePosition="before" matBadgeColor="accent">
+                Reveals
+        </p>
+    </div>
+</div>
