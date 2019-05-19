@@ -1,5 +1,5 @@
 // tslint:disable-next-line:max-line-length
-import { Component, OnInit, Input, HostListener, ViewChild, ElementRef, AfterViewChecked, OnDestroy, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, HostListener, ViewChild, ElementRef, AfterViewChecked, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Board } from 'src/app/models/board/board';
 import { Question } from 'src/app/models/question/question';
 import { QuestionMap } from 'src/app/models/question-map/question-map';
@@ -423,13 +423,13 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     isComplete(): boolean {
-        // return this.questionMap.nodes.every(node => {
-        //     const letter = node.cell.querySelector('.letter').innerHTML;
-        //     if (letter.toLowerCase() === node.answer.toLowerCase()) {
-        //         return true;
-        //     }
-        // });
-        return true;
+        return this.questionMap.nodes.every(node => {
+            const letter = node.cell.querySelector('.letter').innerHTML;
+            if (letter.toLowerCase() === node.answer.toLowerCase()) {
+                return true;
+            }
+        });
+        // return true;
     }
 
     isClickable(row: number, col: number): boolean {
