@@ -69,6 +69,10 @@ export class RaceModeComponent extends PlaySuperComponent implements OnInit {
             this.triggerRaceFinishedModal();
         });
 
+        this.playService.revealsRemainingChanged$.subscribe(value => {
+            this.raceModeService.updateRemainingReveals(value);
+        });
+
         this.playService.matchFinishedTriggered.subscribe(_ => {
             this.raceModeService.raceFinished();
         });

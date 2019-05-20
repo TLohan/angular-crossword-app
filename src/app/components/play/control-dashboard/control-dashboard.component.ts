@@ -43,7 +43,7 @@ export class ControlDashboardComponent implements OnInit {
             this.revealedQuestions.push(this.selectedQuestion);
             this.playService.changeRemainingReveals(this.remainingReveals);
             if (this.mode === PlayMode.RACE_MODE) {
-                this.raceModeService.updateRemainingReveals(this.remainingReveals);
+                this.playService.changeRemainingReveals(this.remainingReveals);
             }
         }
     }
