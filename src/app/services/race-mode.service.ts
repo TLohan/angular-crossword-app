@@ -1,12 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
+import { Socket, SocketIoModule } from 'ngx-socket-io';
 import { Observable, Subject } from 'rxjs';
 import { WrappedSocket } from 'ngx-socket-io/src/socket-io.service';
 import { Board } from '../models/board/board';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class RaceModeService implements OnDestroy {
-
+    static instance_counter = 0;
     connectedSource = this.socket.fromEvent<boolean>('connected');
 
     numUsersOnlineSource = this.socket.fromEvent<number>('usersOnline');
@@ -21,6 +22,7 @@ export class RaceModeService implements OnDestroy {
     opponentProgressSource = this.socket.fromEvent<number>('updateOpponentProgress');
 
     otherPlayerDisconnectedSource = this.socket.fromEvent<boolean>('otherPlayerDisconnected');
+    otherPlayerQuitSource = this.socket.fromEvent<boolean>('otherPlayerQuit');
 
     matchId: string;
     matchSocket: NamespaceSocket;
@@ -30,8 +32,10 @@ export class RaceModeService implements OnDestroy {
 
     matchReady = false;
 
-    constructor(public socket: Socket) {
+    constructor(public socket: WrappedSocket) {
         console.log('raceModeServiceCreated');
+        console.log('raceModeService instances created: ', ++RaceModeService.instance_counter);
+        console.log('socket', socket);
         this.namespaceIdSource.subscribe(value => {
             console.log('set namespace: ', value);
             this.matchId = value;
@@ -79,9 +83,19 @@ export class RaceModeService implements OnDestroy {
         this.socket.emit('rejoinQueue');
     }
 
-    reconnect() {
-        this.socket.emit('disconnect');
+    playerQuit(progress: number) {
+        console.log('called playerQuit');
+        this.matchSocket.socket.emit('playerQuit', progress);
     }
+
+    reconnect() {
+        this.socket.emit('reconnect');
+    }
+
+    removeFromQueue() {
+        this.socket.emit('removeFromQueue');
+    }
+
 
     generateId(length: number = 8): string {
         const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
@@ -98,7 +112,7 @@ export class RaceModeService implements OnDestroy {
 
 
 export class NamespaceSocket {
-    public static count = 0;
+    socketUrl = environment.socketUrl.url;
 
     socket: WrappedSocket;
     namespaceId: string;
@@ -111,7 +125,7 @@ export class NamespaceSocket {
 
     init() {
         console.log('connecting to socket: ', this.namespaceId);
-        this.socket = new WrappedSocket({ url: `https://race-mode-server.herokuapp.com${this.namespaceId}`, options: {} });
+        this.socket = new WrappedSocket({ url: `${this.socketUrl}${this.namespaceId}`, options: {} });
         console.log('socket: ', this.socket);
         this.matchReadySource = this.socket.fromEvent<boolean>('matchReady');
         this.boardSource = this.socket.fromEvent<Board>('setBoard');

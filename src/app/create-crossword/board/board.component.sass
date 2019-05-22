@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css?family=Staatliches')
+    
+$empty-cell-color: #ababab
+$occupied-cell-color: #ffffff
+$selected-cell-color: #5af091
+
+$cell-hover: #abd7ff
+
+$board-outline-color: #6d6868
+$letter-color: #383737
+
+$separator-blue: #adadf3
+$sub-separator-blue: #9192fd
+    
+.letter
+    font-family: monospace
+    font-size: 1.2em
+    font-weight: 700
+
+.nextCell
+    background-color: #ffff00 !important
+
+.cell 
+    border: 1px solid $board-outline-color
+    height: 30px
+    width: 30px
+    cursor: pointer
+
+    &:hover
+        background-color: $cell-hover
+    
+    p
+        height: 100%
+        margin: 0
+        vertical-align: middle
+        text-align: center
+
+.invalidFeedback
+    color: red
+    font-size: .7em
+    text-align: left
+    display: none
+    padding: 0
+    margin: 0
+
+.feedback
+    paddding: 0
+.emptyCell
+    background-color: $empty-cell-color
+
+.occupiedCell
+    background-color: $occupied-cell-color
+    font-family: monospace
+    text-transform: capitalize
+    color: $letter-color
+
+.selectedCell
+    background-color: $selected-cell-color
+
+.questions
+    margin-bottom: 2%
+
+    hr
+        background-color: $separator-blue
+        margin-top: 2%
+
+    .questionsList
+        text-align: left
+
+        .questionOrientation
+            font-size: 1em
+            font-weight: 700
+            margin-bottom: 1%
+        
+        hr
+            margin-top: 1%
+            background-color: $sub-separator-blue
+    
+    #questionsHeader
+   
+
+    .question
+    font-size: .8em
+
+.btn-group
+    padding-left: 0
+    padding-right: 0
+
+.alert
+    font-size: .95em
+
+#answerMaxLengthValidation
+    visibility: visible
+
+#answerField
+    text-transform: uppercase
+
+.question
+    .delete-icon, .edit-icon
+        visibility: hidden
+        cursor: pointer
+
+    .delete-icon
+        color: red
+
+    .edit-icon
+        color: blue
+        
+    &:hover
+        .edit-icon, .delete-icon
+            visibility: visible
+
+.header
+    font-family:  'Staatliches', cursive;
+
+
+@media (max-width: 1199px)
+    .cell
+        width: 25px
+        height: 25px

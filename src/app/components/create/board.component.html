@@ -1,9 +1,0 @@
-<div class="container-fluid">
-    <div class="board d-flex justify-content-center align-items-center">
-        <div *ngFor="let row of board?.boardMap; let i = index" class="flex-row">
-            <div *ngFor="let col of row; let j = index" class="cell emptyCell" (click)="selectCell(i, j)" id="{{'cell-' + i + '_'+ j}}">
-                <p class="letter mx-auto"></p>
-            </div>
-        </div>
-    </div>
-</div>

@@ -1,4 +1,4 @@
-import { Orientation } from 'src/app/components/play/orientation.enum';
+import { Orientation } from 'src/app/play-crossword/orientation.enum';
 
 export class Question {
     id: number;

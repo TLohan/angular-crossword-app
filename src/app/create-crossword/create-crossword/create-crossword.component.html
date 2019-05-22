@@ -1,0 +1,14 @@
+<div class="container">
+        <br>
+        <div class="row" id="header">
+            <h4>Create Crossword</h4>
+        </div>
+        <div *ngIf="pickSizeMode">
+            <app-configure-board [board]="board" (sizeSet)="nextStep($event)"></app-configure-board>
+            <!-- <app-configure-board></app-configure-board> -->
+        </div>
+        <div *ngIf="!pickSizeMode">
+            <app-add-questions [board]="board" (save)="save()"></app-add-questions>
+            <!-- <app-add-questions></app-add-questions> -->
+        </div>
+    </div>

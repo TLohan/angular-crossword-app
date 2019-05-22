@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Question } from '../models/question/question';
 import { CellMap } from '../models/cell-map/cell-map';
-import { Orientation } from '../components/play/orientation.enum';
+import { Orientation } from '../play-crossword/orientation.enum';
 
 @Injectable({
     providedIn: 'root'
@@ -21,6 +21,8 @@ export class PlayService {
     private timerSource = new Subject<number>();
     private matchFinishedSource = new Subject<boolean>();
     private triggerSoloReplaySource = new Subject<boolean>();
+    private triggerRevealAllSource = new Subject<boolean>();
+    private revealAllConfirmedSource = new Subject<boolean>();
 
     constructor() { }
 
@@ -36,6 +38,8 @@ export class PlayService {
     timerChanged$ = this.timerSource.asObservable();
     matchFinishedTriggered = this.matchFinishedSource.asObservable();
     soloReplayTriggered$ = this.triggerSoloReplaySource.asObservable();
+    revealAllTriggered$ = this.triggerRevealAllSource.asObservable();
+    revealAllConfirmed$ = this.revealAllConfirmedSource.asObservable();
 
     changeQuestion(question: Question, selectHeadCell: boolean = false) {
         this.selectedQuestionSource.next(question);
@@ -80,5 +84,13 @@ export class PlayService {
 
     triggerSoloReplay() {
         this.triggerSoloReplaySource.next(true);
+    }
+
+    triggerRevealAll() {
+        this.triggerRevealAllSource.next(true);
+    }
+
+    confirmRevealAll() {
+        this.revealAllConfirmedSource.next(true);
     }
 }

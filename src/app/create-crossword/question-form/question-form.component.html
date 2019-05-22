@@ -1,0 +1,63 @@
+<div id="body" *ngIf="addQuestionMode || editQuestionMode">
+
+    <form [formGroup]="questionFormGroup">
+        <!-- orientation -->
+        <div class="form-group d-flex justify-content-center">
+            <div class="btn-group btn-group-sm btn-group-toggle col-8">
+                <label class="btn btn-outline-dark active col-form-label" id="downLabel" #downLabel
+                    (click)="toggleOrientation('down')">
+                    <input type="radio" name="orientation" class="form-control form-control-sm" id="down"
+                        autocomplete="off">Down
+                </label>
+                <label class="btn btn-outline-dark" id="acrossLabel" (click)="toggleOrientation('across')">
+                    <input type="radio" name="orientation" id="across" class="form-control form-control-sm" #acrossLabel
+                        autocomplete="off" checked>Across
+                </label>
+            </div>
+        </div>
+
+        <!-- clue input -->
+        <div class="form-group row">
+            <div class="d-flex col-12 justify-content-between align-items-center">
+                <label for="clueField">Question</label>
+                <div id="clueRequiredFeedback" class="invalidFeedback">Required!</div>
+            </div>
+            <input type="text" class="col-12" required formControlName="clueField" #clue id="clueField"
+                autocomplete="off">
+            <!-- <div class="col-3 col-form-label d-flex align-items-center feedback">
+                    <div id="clueRequiredFeedback" class="invalidFeedback">Required!</div>                        
+                </div> -->
+        </div>
+
+        <!-- answer input -->
+        <div class="form-group row">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <label for="answerField">Answer</label>
+                <div id="answerRequiredFeedback" class="invalidFeedback">Required!</div>
+                <div class="text-danger" style="font-size: .7em" *ngIf="conflict">That answer is in conflict!</div>
+            </div>
+            <input type="text" maxlength={{maxAnswerLength}} autocomplete="off" class="col-12" required
+                (keydown)="alphaOnly($event)" (keyup)="updateBoard()" formControlName="answerField" id="answerField">
+            <!-- <div class="col-3 col-form-label d-flex align-items-center feedback">
+                    <div id="answerRequiredFeedback" class="invalidFeedback">Required!</div>                        
+                    <div class="text-danger" style="font-size: .7em" *ngIf="conflict">That answer is in conflict!</div>
+                </div> -->
+        </div>
+
+
+        <!-- submit or edit button -->
+        <div class="form-group d-flex justify-content-center">
+            <div class="" id="formBtns" (mouseenter)="mouseOverSubmit(true)" (mouseleave)="mouseOverSubmit(false)">
+                <button *ngIf="editQuestionMode" [disabled]="checkValidity()" (click)="submitEditedQuestion()"
+                    id="editBtn" class="btn formBtn">Edit</button>
+                <button *ngIf="!editQuestionMode" [disabled]="checkValidity()" (click)="submitNewQuestion()"
+                    id="submitBtn" class="btn btn-sm formBtn">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div *ngIf="!addQuestionMode && !editQuestionMode">
+    <div class="alert alert-warning">
+        Select a cell to add a question.
+    </div>
+</div>

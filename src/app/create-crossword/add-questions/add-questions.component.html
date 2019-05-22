@@ -1,0 +1,11 @@
+<div class="container-fluid">
+        <div class="row">
+            <app-board #appBoard class="col-lg-6 col-md-8 col-xs-12" [board]="board" [(selectedCell)]="selectedCell" [orientation]="orientation" [answer]="answerArr.join('')" ></app-board>
+            <div id="addQuestion" class="col-lg-6 col-md-4 col-xs-12">
+                <div class="row d-block">
+                    <app-question-form [conflict]="conflict" [addQuestionMode]="addQuestionMode" [editQuestionMode]="editQuestionMode" [(answerArr)]="answerArr" [maxAnswerLength]="maxAnswerLength" [(orientation)]="orientation" (addQuestion)="addQuestion($event)"></app-question-form>
+                    <app-created-questions-list [questions]="questions" (questionToDelete)="deleteQuestion($event)" (questionToEdit)="editQuestion($event)" (triggerCrosswordSave)="saveCrossword()"></app-created-questions-list>
+                </div>
+            </div>
+        </div>
+    </div>

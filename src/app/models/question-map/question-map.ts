@@ -1,5 +1,5 @@
 import { Question } from '../question/question';
-import { Orientation } from 'src/app/components/play/orientation.enum';
+import { Orientation } from 'src/app/play-crossword/orientation.enum';
 
 export class QuestionMap {
     nodes: Node[] = [];

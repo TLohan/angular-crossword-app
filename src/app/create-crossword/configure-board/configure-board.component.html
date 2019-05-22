@@ -1,0 +1,54 @@
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="d-block d-md-none mx-auto mb-3">
+            <h6>Size: <strong>{{numCols}} Rows</strong> by <strong>{{numRows}} Columns</strong>.</h6>
+            <div class="btn-group ml-5 mt-1">
+                <button (click)="resizeBoard()" class="btn btn-outline-dark btn-sm">Resize</button>
+                <button (click)="nextStep()" id="nextStepBtn" class="btn btn-outline-dark btn-sm">Next</button>
+            </div>
+        </div>
+
+        <br>
+        <div class="col-xs-12 col-md-7">
+            <div *ngIf="resizeMode" class="resizable">
+                <div class="board d-flex justify-content-center " (click)="resize()">
+                    <div *ngFor="let row of rows" class="flex-row">
+                        <div *ngFor="let col of cols" class="cell" (mouseenter)="overCell(row, col)"
+                            id="{{'cell-' + row + '_'+ col}}">
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!resizeMode" class="nonResizable">
+                <div class="board d-flex justify-content-center align">
+                    <div *ngFor="let row of rows" class="flex-row">
+                        <div *ngFor="let col of cols" class="cell">
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3 d-none d-md-flex align-items-center" style="text-align: left;">
+            <div>
+                <h4 class="header">Set Size</h4>
+                <h6 class="sub-header">Size: <strong>{{numCols}} Rows</strong> by <strong>{{numRows}} Columns</strong>.
+                </h6>
+                <br>
+
+                <div class="form-group row">
+                    <button (click)="resizeBoard()" id="resizeBtn" class="btn btn-sm col-12">Resize</button>
+                </div>
+                <br>
+                <div class="form-group row">
+                    <button (click)="nextStep()" id="nextStepBtn" class="btn btn-success btn-sm col-12">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+
+
+</div>
