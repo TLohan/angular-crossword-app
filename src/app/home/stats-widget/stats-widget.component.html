@@ -22,13 +22,13 @@
                 <td class="centerCol">{{stat.seconds | timer}}</td>
             </tr>
         </tbody>
-        <tbody *ngIf="stats === []">
+        <tbody *ngIf="_stats === []">
             <tr>
                 <td colspan="3">No times saved yet!</td>
             </tr>
         </tbody>
     </table>
-    <div *ngIf="!_stats" class="d-flex align-content-center justify-content-center spinner">
+    <div *ngIf="!stats.length" class="d-flex align-content-center justify-content-center spinner">
         <mat-spinner></mat-spinner>
     </div>
 </div>

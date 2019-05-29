@@ -1,5 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Auth2Service } from 'src/app/core/auth2.service';
+import * as fromRoot from '../../states/app.state';
+import { Store, select } from '@ngrx/store';
+import * as authActions from '../../states/auth.actions';
+import * as fromAuth from '../../states/auth.reducer';
 
 @Component({
     templateUrl: './login.component.html',
@@ -19,27 +23,17 @@ export class LoginComponent implements OnInit {
 
     @Input() profile: any;
 
-    constructor(private authService: Auth2Service) {
+    constructor(private authService: Auth2Service, private store: Store<fromRoot.State>) {
     }
 
 
 
     ngOnInit(): void {
-        // if (localStorage.getItem('isLoggedIn') === 'true') {
-        //     this.authService.renewTokens();
-        //     this.isLoggedIn = true;
-        // } else {
-        //     this.isLoggedIn = false;
-        // }
-
-        // if (this.authService.userProfile) {
-        //     this.profile = this.authService.userProfile;
-        //   } else {
-        //     this.authService.getProfile((err, profile) => {
-        //       this.profile = profile;
-        //     });
-        // }
-        // console.log(this.profile);
+        this.store.pipe(select(fromAuth.selectUserProfile)).subscribe(profile => {
+            if (profile) {
+                this.profile = profile;
+            }
+        });
     }
 
     get isLoggedIn() {
@@ -47,11 +41,11 @@ export class LoginComponent implements OnInit {
     }
 
     login() {
-        this.authService.login();
+        this.store.dispatch(new authActions.Login());
     }
 
     logout() {
-        this.authService.logout();
+        this.store.dispatch(new authActions.Logout());
     }
 
     getUsername() {

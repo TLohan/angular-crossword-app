@@ -5,6 +5,7 @@ import { RunRaceComponent } from './race-mode/run-race/run-race.component';
 
 const ROUTES: Routes = [
     { path: 'play/:id', component: SoloModeComponent },
+    { path: 'play/random', component: SoloModeComponent},
     { path: 'raceMode', component: RunRaceComponent },
 ];
 

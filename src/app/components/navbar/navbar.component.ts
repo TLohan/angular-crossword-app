@@ -12,18 +12,5 @@ export class NavbarComponent {
 
     constructor(public authService: Auth2Service) { }
 
-    setActive(linkIndex: number): void {
-        const prevElement = document.querySelector('.active');
-        if (prevElement) {
-            prevElement.classList.remove('active');
-        }
-        document.querySelector('button').click();
-        const activeLink = <HTMLElement>document.querySelectorAll('.nav-item')[linkIndex];
-        activeLink.classList.add('active');
-    }
-
-    enterRaceMode(): void {
-        console.log('clicked erm');
-    }
 
 }

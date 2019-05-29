@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { PlayService } from 'src/app/services/play.service';
@@ -10,12 +10,9 @@ import { PlayService } from 'src/app/services/play.service';
 })
 export class SoloMatchFinishedModalComponent implements OnInit {
 
-    time = 0;
+    @Input() timer: number;
 
     constructor(private activeModal: NgbActiveModal, private router: Router, private playService: PlayService) {
-        this.playService.timerChanged$.subscribe(val => {
-            this.time = val;
-        });
     }
 
     ngOnInit() {

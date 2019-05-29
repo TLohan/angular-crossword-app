@@ -8,7 +8,7 @@ import { BoardStat } from 'src/app/models/board/board-stat';
 })
 export class StatsWidgetComponent implements OnInit, AfterViewInit {
 
-    @Input() _stats: BoardStat[];
+    @Input() _stats: BoardStat[] = [];
 
     toggledDown = true;
 

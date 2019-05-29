@@ -3,19 +3,65 @@ import * as auth0 from 'auth0-js';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { Subject, bindNodeCallback } from 'rxjs';
+import { Store, select } from '@ngrx/store';
+import * as fromRoot from '../states/app.state';
+import * as authActions from '../states/auth.actions';
+import * as fromAuth from '../states/auth.reducer';
 
 @Injectable()
 export class Auth2Service {
+    _authFlag = 'isLoggedIn';
 
-    private _userProfile: any;
-
-    set userProfile(value: any) {
-        this._userProfile = value;
-    }
+    // set userProfile(value: any) {
+    //     this._userProfile = value;
+    //     this.userProfileSource.next(this._userProfile);
+    // }
 
     get userProfile() {
         return this._userProfile;
     }
+
+
+    constructor(public router: Router, private http: HttpClient, private store: Store<fromRoot.State>) {
+        this._idToken = '';
+        this._accessToken = '';
+        this._expiresAt = 0;
+
+        console.log('in authService');
+
+        this.store.pipe(select(fromAuth.selectUserProfile)).subscribe(profile => {
+            this._userProfile = profile;
+        });
+
+        this.store.pipe(select(fromAuth.getAccessToken)).subscribe(accessToken => {
+            this._accessToken = accessToken;
+        });
+
+        this.store.pipe(select(fromAuth.getScopes)).subscribe(scopes => {
+            this._scopes = scopes;
+        });
+    }
+
+    get accessToken(): string {
+        return this._accessToken;
+    }
+
+    get idToken(): string {
+        return this._idToken;
+    }
+
+    get authenticated() {
+        return JSON.parse(localStorage.getItem(this._authFlag));
+    }
+
+    get expiresAt(): number {
+        return this._expiresAt;
+    }
+
+    userProfileSource = new Subject<any>();
+
+    private _userProfile: any;
 
     private _accessToken: string;
     private _idToken: string;
@@ -30,29 +76,13 @@ export class Auth2Service {
         domain: 'tlohan.eu.auth0.com',
         audience: 'localhost:60844',
         clientID: 'JLigKfV71nyicgxpAdkoAmac0xi3YDHl',
-        redirectUri:  `${this.baseAppUrl}/callback`,
+        redirectUri: `${this.baseAppUrl}/callback`,
         scope: this.requestedScopes,
         responseType: 'token id_token'
     });
 
-
-    constructor(public router: Router, private http: HttpClient) {
-        this._idToken = '';
-        this._accessToken = '';
-        this._expiresAt = 0;
-    }
-
-    get accessToken(): string {
-        return this._accessToken;
-    }
-
-    get idToken(): string {
-        return this._idToken;
-    }
-
-    get expiresAt(): number {
-        return this._expiresAt;
-    }
+    parseHash$ = bindNodeCallback(this.auth0.parseHash.bind(this.auth0));
+    checkSession$ = bindNodeCallback(this.auth0.checkSession.bind(this.auth0));
 
     public login(): void {
         this.auth0.authorize();
@@ -77,21 +107,34 @@ export class Auth2Service {
         localStorage.setItem('isLoggedIn', 'true');
         // set the time that the access token will expire at
         const expiresAt = (authResult.expiresIn * 1000) + new Date().getTime();
-        this._accessToken = authResult.accessToken;
+        // this._accessToken = authResult.accessToken;
+        this.store.dispatch(new authActions.SetAccessToken(this._accessToken));
         console.log(this.accessToken);
         const scopes = authResult.scope || '';
         this._idToken = authResult.idToken;
         this._expiresAt = expiresAt;
-        this.getProfile((err, profile) => {
-            this.userProfile = profile;
-        });
+        // this.getProfile((err, profile) => {
+        //     this.userProfile = profile;
+        // });
         this._scopes = JSON.stringify(scopes);
         localStorage.setItem('scopes', this._scopes);
     }
 
+    public setAuth(authResult: any) {
+        this._expiresAt = authResult.expiresIn * 1000 + Date.now();
+        localStorage.setItem(this._authFlag, JSON.stringify(true));
+    }
+
+    public resetAuthFlag() {
+        window.localStorage.removeItem(this._authFlag);
+    }
+
     public userHasScopes(scopes: string[]): boolean {
-        const grantedScopes = JSON.parse(localStorage.getItem('scopes')).split(' ');
-        return scopes.every(scope => grantedScopes.includes(scope));
+        if (this._scopes) {
+            const grantedScopes = this._scopes.split(' ');
+            return scopes.every(scope => grantedScopes.includes(scope));
+        }
+        return false;
     }
 
     public renewTokens(): void {
@@ -121,12 +164,8 @@ export class Auth2Service {
         this.router.navigate(['/home']);
     }
 
-    isAuthenticated(): boolean {
-        // Check whether the current time is less than the access token's expiry time.
-        return new Date().getTime() < this._expiresAt;
-    }
-
     public getProfile(cb) {
+        console.log('cb', cb);
         if (!this.accessToken) {
             throw new Error('Access token must exist to fetch profile.');
         }
@@ -134,9 +173,10 @@ export class Auth2Service {
         const self = this;
         this.auth0.client.userInfo(this._accessToken, (err, profile) => {
             if (profile) {
-                this.userProfile = profile;
+                this._userProfile = profile;
             }
-
+            console.log('err', err);
+            console.log('profile', profile);
             cb(err, profile);
         });
     }

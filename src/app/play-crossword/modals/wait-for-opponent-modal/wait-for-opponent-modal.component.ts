@@ -24,7 +24,7 @@ export class WaitForOpponentModalComponent implements OnInit {
         }
         // this.raceModeService.socket.disconnect();
         this.raceModeService.connected = false;
-        this.router.navigate(['/']);
+        this.router.navigate(['']);
     }
 
 }

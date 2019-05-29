@@ -4,9 +4,17 @@ import { HomeComponent } from './home/home.component';
 import { BoardThumbComponent } from './board-thumb/board-thumb.component';
 import { StatsWidgetComponent } from './stats-widget/stats-widget.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TimerPipe } from '../pipes/timer.pipe';
 import { HomeRoutingModule } from './home-routing.module';
 import { SharedModule } from '../shared/shared.module';
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { boardReducer } from '../states/board.reducer';
+import { environment } from 'src/environments/environment';
+import { boardStatReducer } from '../states/boardStat.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { BoardEffects } from '../states/board.effects';
+import { BoardStatEffects } from '../states/board-stat.effects';
 
 @NgModule({
     declarations: [
@@ -18,6 +26,10 @@ import { SharedModule } from '../shared/shared.module';
         CommonModule,
         MatProgressSpinnerModule,
         SharedModule,
+        NgbPaginationModule.forRoot(),
+        StoreModule.forFeature('boards', boardReducer),
+        StoreModule.forFeature('boardStats', boardStatReducer),
+        EffectsModule.forFeature([BoardEffects, BoardStatEffects]),
         HomeRoutingModule,
     ],
     providers: [

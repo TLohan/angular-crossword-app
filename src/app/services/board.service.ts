@@ -1,23 +1,33 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Board } from '../models/board/board';
 import { environment } from 'src/environments/environment';
-import { AuthService } from '../core/auth.service';
 import { Auth2Service } from '../core/auth2.service';
 import { BoardStat } from '../models/board/board-stat';
+import * as fromRoot from '../states/app.state';
+import { Store, select } from '@ngrx/store';
 
 @Injectable()
 export class BoardService {
 
     baseServerUrl = environment.baseServerUrl;
+    _accessToken: string;
+    _profile: any;
 
-    constructor(private http: HttpClient, private authService: Auth2Service) {
+    get accessToken(): string {
+        return this.authService.accessToken;
     }
+
+    get profile(): any {
+        return this.authService.userProfile;
+    }
+
+    constructor(private http: HttpClient, private authService: Auth2Service, private store: Store<fromRoot.State>) {}
 
     getBoards(): Observable<any> {
         const url = `${this.baseServerUrl}/xwords`;
-        const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.accessToken}`);
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${this.accessToken}`);
         return this.http.get(url, {headers: headers});
     }
 
@@ -42,7 +52,8 @@ export class BoardService {
         return this.http.get(url);
     }
 
-    getBoardStatsForUser(userEmail: string): Observable<any> {
+    getBoardStatsForUser(): Observable<any> {
+        const userEmail = this.profile.name;
         const url = `${this.baseServerUrl}/boardstats/user/${userEmail}`;
         return this.http.get(url);
     }
@@ -54,6 +65,7 @@ export class BoardService {
 
     addBoardStat(boardStat: BoardStat) {
         const url = `${this.baseServerUrl}/boardStats`;
+        boardStat.userId = this.profile.name;
         const body = boardStat;
         return this.http.post(url, body, { observe: 'response' });
     }

@@ -27,6 +27,10 @@ import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
 import { RaceModeService } from '../services/race-mode.service';
 import { NgbActiveModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { StoreModule } from '@ngrx/store';
+import { boardReducer } from '../states/board.reducer';
+import { boardStatReducer } from '../states/boardStat.reducer';
+import { authReducer } from '../states/auth.reducer';
 
 const socketConfig: SocketIoConfig = environment.socketUrl;
 
@@ -59,6 +63,9 @@ const socketConfig: SocketIoConfig = environment.socketUrl;
         SharedModule,
         NgbModalModule,
         SocketIoModule.forRoot(socketConfig),
+        StoreModule.forFeature('boards', boardReducer),
+        StoreModule.forFeature('boardStats', boardStatReducer),
+        StoreModule.forFeature('auth', authReducer),
         PlayCrosswordRouterModule
     ],
     providers: [

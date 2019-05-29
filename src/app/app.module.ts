@@ -7,15 +7,13 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-
+import { StoreModule } from '@ngrx/store';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BoardService } from './services/board.service';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { LoginComponent } from './components/login/login.component';
-import { AuthService } from './core/auth.service';
 import { LandingPageComponent } from './components/landing/landing-page.component';
 import { NotFoundComponent } from './components/404/404.component';
 import { HeaderInterceptor } from './core/http-interceptor.service';
@@ -26,6 +24,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HomeModule } from './home/home.module';
 import { CreateCrosswordModule } from './create-crossword/create-crossword.module';
 import { PlayCrosswordModule } from './play-crossword/play-crossword.module';
+import { boardReducer } from './states/board.reducer';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { environment } from 'src/environments/environment';
+import { boardStatReducer } from './states/boardStat.reducer';
+import { authReducer } from './states/auth.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './states/auth.effects';
 
 
 @NgModule({
@@ -49,10 +54,16 @@ import { PlayCrosswordModule } from './play-crossword/play-crossword.module';
         PlayCrosswordModule,
         AppRoutingModule,
         ToastrModule.forRoot(),
+        StoreModule.forRoot([boardReducer, boardStatReducer, authReducer]),
+        EffectsModule.forRoot([AuthEffects]),
+        StoreDevtoolsModule.instrument({
+            name: 'Crossword App DevTools',
+            maxAge: 25,
+            logOnly: environment.production
+        }),
     ],
     providers: [
         BoardService,
-        AuthService,
         Auth2Service,
         ScopeGuardService,
         // NamespaceSocket,

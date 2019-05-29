@@ -32,9 +32,8 @@ export class BoardComponent implements OnInit {
             return !this.alteredCells.every(cell => {
                 return !cell.classList.contains('bg-danger');
             });
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Input()

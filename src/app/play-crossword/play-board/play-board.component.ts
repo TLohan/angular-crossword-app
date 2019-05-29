@@ -422,9 +422,6 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
         if (this.isComplete()) {
             if (this.mode === PlayMode.SOLO_MODE) {
                 this.stopTimer();
-                if (this.validAttempt) {
-                   this._saveStat();
-                }
             }
             this.playService.matchFinished();
             document.removeEventListener('keydown', this.listener);
@@ -433,13 +430,13 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     isComplete(): boolean {
-        // return this.questionMap.nodes.every(node => {
-        //     const letter = node.cell.querySelector('.letter').innerHTML;
-        //     if (letter.toLowerCase() === node.answer.toLowerCase()) {
-        //         return true;
-        //     }
-        // });
-        return true;
+        return this.questionMap.nodes.every(node => {
+            const letter = node.cell.querySelector('.letter').innerHTML;
+            if (letter.toLowerCase() === node.answer.toLowerCase()) {
+                return true;
+            }
+        });
+        // return true;
     }
 
     isClickable(row: number, col: number): boolean {
@@ -527,16 +524,6 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
             this._revealSingleQuestion(question);
         });
         this.checkIfComplete();
-    }
-
-    private _saveStat() {
-        const boardStat = new BoardStat();
-        boardStat.boardId = this.board.id;
-        boardStat.seconds = this.timer;
-        boardStat.played = true;
-        // boardStat.userId = this._authService.userProfile.name;
-        boardStat.date = new Date(Date.now());
-        this.boardService.addBoardStat(boardStat).subscribe();
     }
 
 }
