@@ -32,7 +32,11 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
 
 
     // tslint:disable-next-line:max-line-length
-    constructor(private boardService: BoardService, private route: ActivatedRoute, protected playService: PlayService, private modalService: NgbModal, private store: Store<fromRoot.State>) {
+    constructor(private boardService: BoardService,
+        private route: ActivatedRoute, 
+        protected playService: PlayService, 
+        private modalService: NgbModal, 
+        private store: Store<fromRoot.State>) {
         super(playService);
     }
 
@@ -42,21 +46,15 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
         const id = this.route.snapshot.paramMap.get('id');
         console.log('id:', id);
 
-        this.store.pipe(select(fromAuth.selectIsLoggedIn), takeWhile(() => this.componentActive)).subscribe(val => {
-            if (val) {
-                this.store.dispatch(new boardActions.LoadBoards());
-                if (id === 'random') {
-                    this.store.dispatch(new boardActions.RandomiseCurrentBoard());
-                } else {
-                    this.store.dispatch(new boardActions.SetCurrentBoardId(+id));
-                }
-    
-                this.store.pipe(select(fromBoard.getCurrentBoard, takeWhile(() => this.componentActive))).subscribe((board: Board) => {
-                    this.board = new Board();
-                    this.board.fromJSON(board);
-                });
-            }
+        if (id === 'random') {
+            this.store.dispatch(new boardActions.RandomiseCurrentBoard());
+        } else {
+            this.store.dispatch(new boardActions.SetCurrentBoardId(+id));
+        }
 
+        this.store.pipe(select(fromBoard.getCurrentBoard, takeWhile(() => this.componentActive))).subscribe((board: Board) => {
+            this.board = new Board();
+            this.board.fromJSON(board);
         });
 
         this.playService.matchFinishedTriggered.subscribe(_ => {

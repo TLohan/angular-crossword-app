@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Board } from '../models/board/board';
 import { environment } from 'src/environments/environment';
 import { Auth2Service } from '../core/auth2.service';
@@ -28,7 +28,10 @@ export class BoardService {
     getBoards(): Observable<any> {
         const url = `${this.baseServerUrl}/xwords`;
         const headers = new HttpHeaders().set('Authorization', `Bearer ${this.accessToken}`);
-        return this.http.get(url, {headers: headers});
+        if (this.accessToken) {
+            return this.http.get(url, {headers: headers});
+        }
+        return of(null);
     }
 
     getBoard(id: number) {

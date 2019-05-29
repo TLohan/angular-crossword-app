@@ -32,7 +32,7 @@ export class AuthEffects implements OnInit {
                         window.location.hash = '';
                         return new fromAuth.LoginSuccess(authResult);
                     }
-                }),
+                }), // , tap(() => this.router.navigate(['/home']))),
                 catchError(error => of(new fromAuth.LoginFailure(error)))
             );
         })
@@ -41,7 +41,7 @@ export class AuthEffects implements OnInit {
     @Effect({dispatch: false})
     loginRedirect$ = this.actions$.pipe(
         ofType<fromAuth.LoginSuccess>(fromAuth.AuthActionTypes.LoginSuccess),
-        tap(() =>  this.router.navigate['/home'] )
+        tap(() =>  this.router.navigate(['/home']) )
     );
 
     @Effect({ dispatch: false })
@@ -90,6 +90,7 @@ export class AuthEffects implements OnInit {
         map(() => new fromAuth.LogoutConfirmed() )
     );
 
+    @Effect({dispatch: false})
     logout$ = this.actions$.pipe(
         ofType<fromAuth.LogoutConfirmed>(fromAuth.AuthActionTypes.LogoutConfirmed),
         tap(() => this.authService.logout())
