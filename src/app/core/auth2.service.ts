@@ -52,7 +52,9 @@ export class Auth2Service {
     }
 
     get authenticated() {
-        return JSON.parse(localStorage.getItem(this._authFlag));
+        const x = JSON.parse(localStorage.getItem(this._authFlag));
+        console.log('authenticated', x);
+        return x;
     }
 
     get expiresAt(): number {

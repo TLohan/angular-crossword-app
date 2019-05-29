@@ -32,11 +32,7 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
 
 
     // tslint:disable-next-line:max-line-length
-    constructor(private boardService: BoardService,
-        private route: ActivatedRoute, 
-        protected playService: PlayService, 
-        private modalService: NgbModal, 
-        private store: Store<fromRoot.State>) {
+    constructor(private boardService: BoardService, private route: ActivatedRoute, protected playService: PlayService, private modalService: NgbModal, private store: Store<fromRoot.State>) {
         super(playService);
     }
 
@@ -56,6 +52,8 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
             this.board = new Board();
             this.board.fromJSON(board);
         });
+
+
 
         this.playService.matchFinishedTriggered.subscribe(_ => {
             // trigger match finished

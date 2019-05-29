@@ -32,7 +32,7 @@ export class AuthEffects implements OnInit {
                         window.location.hash = '';
                         return new fromAuth.LoginSuccess(authResult);
                     }
-                }), // , tap(() => this.router.navigate(['/home']))),
+                }, tap(() => this.router.navigate(['/home']))),
                 catchError(error => of(new fromAuth.LoginFailure(error)))
             );
         })

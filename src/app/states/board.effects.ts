@@ -18,7 +18,7 @@ export class BoardEffects {
             this.boardService.getBoards().pipe(
                 map((boards: Board[]) => (new boardActions.LoadBoardsSuccess(boards))),
                 catchError(err => of(new boardActions.LoadBoardFail(err)))
-                ))
+            ))
     );
 
     @Effect()
