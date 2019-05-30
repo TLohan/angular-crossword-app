@@ -88,10 +88,12 @@ export class QuestionsListComponent implements OnInit {
                 oldSelectedQuestionElement.blur();
             }
         }
-        const newSelectedQuestionElement = document.getElementById(`question-${question.identifier}`);
-        if (newSelectedQuestionElement) {
-            newSelectedQuestionElement.classList.add('selectedQuestion');
-            newSelectedQuestionElement.focus();
+        if (question) {
+            const newSelectedQuestionElement = document.getElementById(`question-${question.identifier}`);
+            if (newSelectedQuestionElement) {
+                newSelectedQuestionElement.classList.add('selectedQuestion');
+                newSelectedQuestionElement.focus();
+            }
         }
     }
 

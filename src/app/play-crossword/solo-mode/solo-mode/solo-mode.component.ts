@@ -62,12 +62,7 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
             }
             const modalRef = this.modalService.open(SoloMatchFinishedModalComponent, { centered: true, backdrop: 'static' });
             modalRef.componentInstance.timer = this.timer;
-            const stat = new BoardStat();
-            stat.boardId = this.board.id;
-            stat.date = new Date(Date.now());
-            stat.seconds = this.timer;
-            stat.played = true;
-            this.boardService.addBoardStat(stat);
+            this.saveStat();
         });
 
         this.playService.soloReplayTriggered$.subscribe(_ => {
@@ -92,6 +87,15 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
             this.modalService.dismissAll();
         }
         const modalRef = this.modalService.open(RevealAllModalComponent, { centered: true, backdrop: 'static' });
+    }
+
+    saveStat() {
+        const stat = new BoardStat();
+        stat.boardId = this.board.id;
+        stat.date = new Date(Date.now());
+        stat.seconds = this.timer;
+        stat.played = true;
+        this.boardService.addBoardStat(stat);
     }
 
     ngOnDestroy() {

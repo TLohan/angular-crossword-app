@@ -25,7 +25,8 @@ export class MobileSelectedQuestionWidgetComponent implements OnInit {
         });
     }
 
-    ngOnInit() { }
+    ngOnInit() {
+    }
 
     selectPrevQuestion() {
         this.playService.selectPreviousQuestion();

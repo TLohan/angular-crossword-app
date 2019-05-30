@@ -28,7 +28,11 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
             this.questionsDown = [];
             this.questionMap = new QuestionMap();
             this.cellMap = new CellMap();
-            this._selectedQuestion = null;
+            this.playService.changeQuestion(null);
+            this.timer = 0;
+            this.playService.timerChanged(this.timer);
+            this._selectedCell = null;
+            this.timerStarted = false;
             this._playBoard(board);
         }
     }
