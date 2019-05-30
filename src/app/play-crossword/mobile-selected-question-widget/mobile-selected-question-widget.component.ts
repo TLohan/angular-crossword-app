@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Question } from 'src/app/models/question/question';
 import { PlayService } from 'src/app/services/play.service';
 

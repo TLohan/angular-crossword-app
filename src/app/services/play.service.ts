@@ -9,6 +9,8 @@ import { Orientation } from '../play-crossword/orientation.enum';
 })
 export class PlayService {
 
+    subjects: Subject<any>[] = [];
+
     private selectedQuestionSource = new Subject<Question>();
     private headCellFlagSource = new Subject<boolean>();
     private cellMapSource = new Subject<CellMap>();
@@ -24,7 +26,20 @@ export class PlayService {
     private triggerRevealAllSource = new Subject<boolean>();
     private revealAllConfirmedSource = new Subject<boolean>();
 
-    constructor() { }
+    constructor() {
+        this.subjects.push(this.selectPreviousQuestionSource);
+        this.subjects.push(this.headCellFlagSource);
+        this.subjects.push(this.cellMapSource);
+        this.subjects.push(this.orientationSource);
+        this.subjects.push(this.progressSource);
+        this.subjects.push(this.remainingRevealsSource);
+        this.subjects.push(this.checkBoardSource);
+        this.subjects.push(this.selectPreviousQuestionSource);
+        this.subjects.push(this.selectNextQuestionSource);
+        this.subjects.push(this.matchFinishedSource);
+        this.subjects.push(this.triggerRevealAllSource);
+        this.subjects.push(this.remainingRevealsSource);
+     }
 
     questionChanged$ = this.selectedQuestionSource.asObservable();
     headCellFlagTriggered$ = this.headCellFlagSource.asObservable();
@@ -83,6 +98,7 @@ export class PlayService {
     }
 
     triggerSoloReplay() {
+        console.log('solo replay triggered');
         this.triggerSoloReplaySource.next(true);
     }
 
@@ -92,5 +108,11 @@ export class PlayService {
 
     confirmRevealAll() {
         this.revealAllConfirmedSource.next(true);
+    }
+
+    removeExistingObservers() {
+        this.subjects.forEach(s => {
+            s.observers.forEach(o => o.closed);
+        });
     }
 }

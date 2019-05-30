@@ -41,7 +41,7 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
         this.componentActive = true;
         const id = this.route.snapshot.paramMap.get('id');
         console.log('id:', id);
-
+        
         if (id === 'random') {
             this.store.dispatch(new boardActions.RandomiseCurrentBoard());
         } else {
@@ -66,6 +66,7 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
         });
 
         this.playService.soloReplayTriggered$.subscribe(_ => {
+            this.playService.removeExistingObservers();
             this.store.dispatch(new boardActions.RandomiseCurrentBoard());
         });
 

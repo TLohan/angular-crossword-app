@@ -13,11 +13,6 @@ import * as fromAuth from '../states/auth.reducer';
 export class Auth2Service {
     _authFlag = 'isLoggedIn';
 
-    // set userProfile(value: any) {
-    //     this._userProfile = value;
-    //     this.userProfileSource.next(this._userProfile);
-    // }
-
     get userProfile() {
         return this._userProfile;
     }
@@ -27,8 +22,6 @@ export class Auth2Service {
         this._idToken = '';
         this._accessToken = '';
         this._expiresAt = 0;
-
-        console.log('in authService');
 
         this.store.pipe(select(fromAuth.selectUserProfile)).subscribe(profile => {
             this._userProfile = profile;
@@ -53,7 +46,6 @@ export class Auth2Service {
 
     get authenticated() {
         const x = JSON.parse(localStorage.getItem(this._authFlag));
-        console.log('authenticated', x);
         return x;
     }
 

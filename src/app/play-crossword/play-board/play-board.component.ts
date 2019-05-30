@@ -10,6 +10,7 @@ import { PlayService } from 'src/app/services/play.service';
 import { PlayMode } from '../play-mode.interface';
 import { BoardStat } from 'src/app/models/board/board-stat';
 import { BoardService } from 'src/app/services/board.service';
+import { Observable, Subject, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-play-board',
@@ -19,10 +20,12 @@ import { BoardService } from 'src/app/services/board.service';
 export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     private _board: Board;
+    _subscriptions: Subscription[] = [];
 
     @Input()
     set board(board: Board) {
         if (board) {
+            this.resetSubs();
             this._board = board;
             this.questionsAcross = [];
             this.questionsDown = [];
@@ -79,42 +82,9 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
     resizeListener: EventListenerOrEventListenerObject;
 
     constructor(private playService: PlayService, private boardService: BoardService) {
+        console.log('play-board component constructed');
         this.playService.questionChanged$.subscribe(question => {
             this._selectedQuestion = question;
-        });
-
-        this.playService.orientationChanged$.subscribe(orientation => {
-            this.selectedOrientation = orientation;
-        });
-
-        this.playService.revealsRemainingChanged$.subscribe(value => {
-            if (value !== 3) {
-                this._revealSingleQuestion(this.selectedQuestion);
-                this.progress = this.questionMap.checkProgress();
-            }
-        });
-
-        this.playService.checkBoardTriggered$.subscribe(_ => {
-            this.check();
-        });
-
-        this.playService.headCellFlagTriggered$.subscribe(_ => {
-            this.selectHeadCell(this.selectedQuestion);
-        });
-
-        this.playService.selectNextQuestionTriggered.subscribe(_ => {
-            this.selectNextQuestion();
-        });
-
-        this.playService.selectPreviousQuestionTriggered.subscribe(_ => {
-            this.selectPrevQuestion();
-        });
-
-        this.playService.revealAllConfirmed$.subscribe(_ => {
-            this._revealAll();
-            if (this.mode === PlayMode.SOLO_MODE) {
-                this.progress = this.questionMap.checkProgress();
-            }
         });
     }
 
@@ -163,9 +133,57 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
         });
     }
 
+    resetSubs() {
+        this._subscriptions.forEach(sub => sub.unsubscribe());
+        console.log('subs: ', this._subscriptions.length);
+        // this._subscriptions = [];
+        const orientationChangedSub = this.playService.orientationChanged$.subscribe(orientation => {
+            console.log('orientation changed');
+            this.selectedOrientation = orientation;
+        });
+
+        const revealsRemainingSub = this.playService.revealsRemainingChanged$.subscribe(value => {
+            if (value !== 3) {
+                this._revealSingleQuestion(this.selectedQuestion);
+                this.progress = this.questionMap.checkProgress();
+            }
+        });
+
+        const checkBoardSub = this.playService.checkBoardTriggered$.subscribe(_ => {
+            this.check();
+        });
+
+        const headCellFlagSub = this.playService.headCellFlagTriggered$.subscribe(_ => {
+            this.selectHeadCell(this.selectedQuestion);
+        });
+
+        const nextQuestionSub = this.playService.selectNextQuestionTriggered.subscribe(_ => {
+            this.selectNextQuestion();
+        });
+
+        const prevQuestionSub = this.playService.selectPreviousQuestionTriggered.subscribe(_ => {
+            this.selectPrevQuestion();
+        });
+
+        const revealAllSub = this.playService.revealAllConfirmed$.subscribe(_ => {
+            this._revealAll();
+            if (this.mode === PlayMode.SOLO_MODE) {
+                this.progress = this.questionMap.checkProgress();
+            }
+        });
+
+        this._subscriptions.push(orientationChangedSub);
+        this._subscriptions.push(revealsRemainingSub);
+        this._subscriptions.push(checkBoardSub);
+        this._subscriptions.push(headCellFlagSub);
+        this._subscriptions.push(nextQuestionSub);
+        this._subscriptions.push(prevQuestionSub);
+        this._subscriptions.push(revealAllSub);
+    }
 
 
     ngOnInit() {
+        console.log('play-board component initialised');
         this.resizeListener = this.sizeChange;
         window.addEventListener('resize', this.resizeListener);
         const cells = document.querySelectorAll<HTMLElement>('.cell');
@@ -191,6 +209,8 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        console.log('play-board component destroyed.');
+        this._subscriptions.forEach(sub => sub.unsubscribe());
         document.removeEventListener('keydown', this.listener);
         document.removeEventListener('resize', this.resizeListener);
         clearInterval(this._timer);
@@ -304,6 +324,7 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     selectNextQuestion() {
         const sortedQuestions = this.board.questions.sort(sortQuestions);
+        console.log('sorted questions', sortedQuestions);
         const currentIndex = sortedQuestions.findIndex(q => q.identifier === this.selectedQuestion.identifier);
         const nextIndex = currentIndex + 1;
         let nextQuestion: Question;
@@ -317,6 +338,7 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     selectPrevQuestion() {
         const sortedQuestions = this.board.questions.sort(sortQuestions);
+        console.log('sorted questions', sortedQuestions);
         const currentIndex = sortedQuestions.findIndex(q => q.identifier === this.selectedQuestion.identifier);
         const prevIndex = currentIndex - 1;
         let prevQuestion: Question;
@@ -336,18 +358,23 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     selectQuestion(question: Question) {
-        this.selectedQuestion = new Question(question.location, question.clue, question.answer, question.orientation, question.identifier);
-        this.selectedQuestion.id = question.id;
-        this.selectedOrientation = question.orientation;
-        this.selectHeadCell(this.selectedQuestion);
-        this.count = 0;
+        if (question) {
+            // tslint:disable-next-line:max-line-length
+            this.selectedQuestion = new Question(question.location, question.clue, question.answer, question.orientation, question.identifier);
+            this.selectedQuestion.id = question.id;
+            this.selectedOrientation = question.orientation;
+            this.selectHeadCell(this.selectedQuestion);
+            this.count = 0;
+        }
     }
 
     selectHeadCell(question: Question) {
-        this.count = 0;
-        const element = this.getElement(question.row, question.col);
-        this.selectedCell = element;
-        this.fakeInput.setValue('');
+        if (question) {
+            this.count = 0;
+            const element = this.getElement(question.row, question.col);
+            this.selectedCell = element;
+            this.fakeInput.setValue('');
+        }
     }
 
 

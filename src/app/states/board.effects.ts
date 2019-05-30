@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { BoardService } from '../services/board.service';
 import * as boardActions from './board.actions';
-import { mergeMap, map, catchError } from 'rxjs/operators';
+import { mergeMap, map, catchError, exhaustMap } from 'rxjs/operators';
 import { Board } from '../models/board/board';
 import { of } from 'rxjs';
 
@@ -24,7 +24,7 @@ export class BoardEffects {
     @Effect()
     randomiseBoard$ = this.actions$.pipe(
         ofType(boardActions.BoardActionTypes.RandomiseCurrentBoard),
-        mergeMap((action: boardActions.LoadBoards) =>
+        exhaustMap((action: boardActions.LoadBoards) =>
             this.boardService.getBoards().pipe(
                 map((boards: Board[]) => {
                     const ids = boards.map(b => b.id);
