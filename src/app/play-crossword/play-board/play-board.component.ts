@@ -8,9 +8,7 @@ import { AbstractControl, FormGroup, FormControl } from '@angular/forms';
 import { Orientation } from '../orientation.enum';
 import { PlayService } from 'src/app/services/play.service';
 import { PlayMode } from '../play-mode.interface';
-import { BoardStat } from 'src/app/models/board/board-stat';
-import { BoardService } from 'src/app/services/board.service';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-play-board',
@@ -81,8 +79,7 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
     inputListener: EventListenerOrEventListenerObject;
     resizeListener: EventListenerOrEventListenerObject;
 
-    constructor(private playService: PlayService, private boardService: BoardService) {
-        console.log('play-board component constructed');
+    constructor(private playService: PlayService) {
         this.playService.questionChanged$.subscribe(question => {
             this._selectedQuestion = question;
         });
@@ -135,8 +132,8 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     resetSubs() {
         this._subscriptions.forEach(sub => sub.unsubscribe());
-        console.log('subs: ', this._subscriptions.length);
-        // this._subscriptions = [];
+        this._subscriptions = [];
+
         const orientationChangedSub = this.playService.orientationChanged$.subscribe(orientation => {
             console.log('orientation changed');
             this.selectedOrientation = orientation;
@@ -183,7 +180,6 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
 
     ngOnInit() {
-        console.log('play-board component initialised');
         this.resizeListener = this.sizeChange;
         window.addEventListener('resize', this.resizeListener);
         const cells = document.querySelectorAll<HTMLElement>('.cell');
@@ -209,7 +205,6 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        console.log('play-board component destroyed.');
         this._subscriptions.forEach(sub => sub.unsubscribe());
         document.removeEventListener('keydown', this.listener);
         document.removeEventListener('resize', this.resizeListener);
@@ -549,8 +544,6 @@ export class PlayBoardComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     private _revealAll() {
-        console.log('cell map', this.cellMap );
-        console.log('no qs: ', this.board.questions.length);
         this.board.questions.forEach(question => {
             this._revealSingleQuestion(question);
         });

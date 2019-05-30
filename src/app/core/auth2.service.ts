@@ -1,4 +1,4 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as auth0 from 'auth0-js';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
@@ -18,7 +18,7 @@ export class Auth2Service {
     }
 
 
-    constructor(public router: Router, private http: HttpClient, private store: Store<fromRoot.State>) {
+    constructor(public router: Router, private store: Store<fromRoot.State>) {
         this._idToken = '';
         this._accessToken = '';
         this._expiresAt = 0;
@@ -84,14 +84,12 @@ export class Auth2Service {
 
     public handleAuthentication(): void {
         this.auth0.parseHash((err, authResult) => {
-            console.log(authResult);
             if (authResult && authResult.accessToken && authResult.idToken) {
                 window.location.hash = '';
                 this.localLogin(authResult);
                 this.router.navigate(['/home']);
             } else if (err) {
                 this.router.navigate(['']);
-                console.log(err);
             }
         });
     }
@@ -107,9 +105,6 @@ export class Auth2Service {
         const scopes = authResult.scope || '';
         this._idToken = authResult.idToken;
         this._expiresAt = expiresAt;
-        // this.getProfile((err, profile) => {
-        //     this.userProfile = profile;
-        // });
         this._scopes = JSON.stringify(scopes);
         localStorage.setItem('scopes', this._scopes);
     }
@@ -164,13 +159,10 @@ export class Auth2Service {
             throw new Error('Access token must exist to fetch profile.');
         }
 
-        const self = this;
         this.auth0.client.userInfo(this._accessToken, (err, profile) => {
             if (profile) {
                 this._userProfile = profile;
             }
-            console.log('err', err);
-            console.log('profile', profile);
             cb(err, profile);
         });
     }

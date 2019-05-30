@@ -10,29 +10,30 @@ import { tap, exhaustMap, map, catchError } from 'rxjs/operators';
 @Injectable()
 export class AuthEffects implements OnInit {
 
-    constructor(private actions$: Actions, private authService: Auth2Service, private router: Router) {
-        console.log('hit auth effects');
-    }
+    private authRes: any;
+
+    constructor(private actions$: Actions, private authService: Auth2Service, private router: Router) { }
 
     @Effect({ dispatch: false })
     login$ = this.actions$.pipe(ofType<fromAuth.Login>(fromAuth.AuthActionTypes.Login), tap(() => {
-        console.log('hit login in effect');
         return this.authService.login();
     }));
 
     @Effect()
     loginComplete$ = this.actions$.pipe(
-        ofType<fromAuth.Login>(fromAuth.AuthActionTypes.LoginComplete),
+        ofType<fromAuth.LoginComplete>(fromAuth.AuthActionTypes.LoginComplete),
         exhaustMap(() => {
             return this.authService.parseHash$().pipe(
                 map((authResult: any) => {
-                    console.log('authRes', authResult);
+                    console.log('auth res', authResult);
                     if (authResult && authResult.accessToken) {
                         this.authService.setAuth(authResult);
                         window.location.hash = '';
-                        return new fromAuth.LoginSuccess(authResult);
+                        this.authRes = authResult;
+                        return new fromAuth.ProcessLogin(authResult);
                     }
-                }, tap(() => this.router.navigate(['/home']))),
+                    return new fromAuth.LoginFailure('error');
+                }),
                 catchError(error => of(new fromAuth.LoginFailure(error)))
             );
         })
@@ -41,7 +42,20 @@ export class AuthEffects implements OnInit {
     @Effect({dispatch: false})
     loginRedirect$ = this.actions$.pipe(
         ofType<fromAuth.LoginSuccess>(fromAuth.AuthActionTypes.LoginSuccess),
-        tap(() =>  this.router.navigate(['/home']) )
+        map((action) => {
+            console.log('in loginRedirect$');
+            console.log('auth res', this.authRes);
+            console.log('action', action);
+            return new fromAuth.ProcessLogin(this.authRes);
+        })
+    );
+
+    @Effect({dispatch: false})
+    processLogin$ = this.actions$.pipe(
+        ofType<fromAuth.ProcessLogin>(fromAuth.AuthActionTypes.ProcessLogin),
+        tap(action => {
+            this.router.navigate(['/home']);
+        })
     );
 
     @Effect({ dispatch: false })
@@ -54,7 +68,7 @@ export class AuthEffects implements OnInit {
             if (err.error_description) {
                 console.error(`Error: ${err.error_description}`);
             } else {
-                console.log('ERROR: ', err);
+                console.error('ERROR: ', err);
             }
             this.router.navigate(['/']);
         })
@@ -67,10 +81,11 @@ export class AuthEffects implements OnInit {
             if (this.authService.authenticated) {
                 return this.authService.checkSession$({}).pipe(
                     map((authResult: any) => {
-                        console.log(authResult);
                         if (authResult && authResult.accessToken) {
                             this.authService.setAuth(authResult);
-                            return new fromAuth.LoginSuccess(authResult);
+                            console.log('authRes', authResult);
+                            this.authRes = authResult;
+                            return new fromAuth.ProcessLogin(authResult);
                         }
                     }),
                     catchError(error => {

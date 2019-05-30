@@ -7,6 +7,7 @@ export enum AuthActionTypes {
     LoginComplete = '[Auth] Login Complete',
     LoginSuccess = '[Auth] Login Success',
     LoginFailure = '[Auth] Login Failure',
+    ProcessLogin = '[Auth] Process Login',
 
     CheckLogin = '[Auth] Check Login',
 
@@ -35,6 +36,11 @@ export class LoginComplete implements Action {
 export class LoginSuccess implements Action {
 
     readonly type = AuthActionTypes.LoginSuccess;
+}
+
+export class ProcessLogin implements Action {
+
+    readonly type = AuthActionTypes.ProcessLogin;
 
     constructor(public payload: any) {}
 }
@@ -71,6 +77,7 @@ export type AuthActions =
     | LoginComplete
     | LoginSuccess
     | LoginFailure
+    | ProcessLogin
     | CheckLogin
     | Logout
     | LogoutConfirmed

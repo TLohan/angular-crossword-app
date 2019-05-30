@@ -28,7 +28,6 @@ export class BoardEffects {
             this.boardService.getBoards().pipe(
                 map((boards: Board[]) => {
                     const ids = boards.map(b => b.id);
-                    console.log('ids', ids);
                     const randId = ids[Math.floor(Math.random() * ids.length)];
                     const setBoards = new boardActions.LoadBoardsSuccess(boards);
                     return new boardActions.RandomiseCurrentBoardSuccess(randId);

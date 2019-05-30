@@ -44,7 +44,8 @@ export const getScopes = createSelector(
 
 export function authReducer(state: AuthState = initialState, action: AuthActions): AuthState {
     switch (action.type) {
-        case AuthActionTypes.LoginSuccess:
+        case AuthActionTypes.ProcessLogin:
+            console.log('processing login');
             return {
                 ...state,
                 accessToken: action.payload['accessToken'],
