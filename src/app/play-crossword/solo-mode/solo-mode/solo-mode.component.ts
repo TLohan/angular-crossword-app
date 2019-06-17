@@ -13,10 +13,8 @@ import { BoardStat } from 'src/app/models/board/board-stat';
 import { Store, select } from '@ngrx/store';
 import * as fromRoot from '../../../states/app.state';
 import * as fromBoard from '../../../states/board.reducer';
-import * as fromAuth from '../../../states/auth.reducer';
-import * as authActions from '../../../states/auth.actions';
 import * as boardActions from 'src/app/states/board.actions';
-import { takeWhile, map, exhaustMap } from 'rxjs/operators';
+import { takeWhile } from 'rxjs/operators';
 
 @Component({
     selector: 'app-solo-mode',
@@ -58,9 +56,9 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
             if (this.modalService.hasOpenModals) {
                 this.modalService.dismissAll();
             }
+            this.saveStat();
             const modalRef = this.modalService.open(SoloMatchFinishedModalComponent, { centered: true, backdrop: 'static' });
             modalRef.componentInstance.timer = this.timer;
-            this.saveStat();
         });
 
         this.playService.soloReplayTriggered$.subscribe(_ => {
@@ -93,7 +91,7 @@ export class SoloModeComponent extends PlaySuperComponent implements OnInit, OnD
         stat.date = new Date(Date.now());
         stat.seconds = this.timer;
         stat.played = true;
-        this.boardService.addBoardStat(stat);
+        this.boardService.addBoardStat(stat).subscribe();
     }
 
     ngOnDestroy() {

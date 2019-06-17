@@ -12,6 +12,14 @@
             </div> -->
         </div>
         <p class="card-subtitle text-muted">Num Questions: {{board.questions.length}}</p>
-        <p class="card-subtitle text-muted">Record time: {{recordStat?.seconds | timer }}</p>
+        <p class="card-subtitle text-muted">Record time: {{recordStat?.seconds | timer}}</p>
+        <div class="">
+            <p [ngClass]="{
+                'alert': true,
+                'alert-success':board.difficulty==='Easy',
+                'alert-warning':board.difficulty==='Medium',
+                'alert-danger':board.difficulty==='Hard'
+            }">{{board.difficulty}}</p>
+        </div>
     </div>
 </div>

@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div class="row">
-
+        <!-- MOBILE ONLY -->
         <div class="d-block d-md-none mx-auto mb-3">
             <h6>Size: <strong>{{numCols}} Rows</strong> by <strong>{{numRows}} Columns</strong>.</h6>
             <div class="btn-group ml-5 mt-1">
@@ -10,7 +10,7 @@
         </div>
 
         <br>
-        <div class="col-xs-12 col-md-7">
+        <div class="col-xs-12 col-md-9">
             <div *ngIf="resizeMode" class="resizable">
                 <div class="board d-flex justify-content-center " (click)="resize()">
                     <div *ngFor="let row of rows" class="flex-row">

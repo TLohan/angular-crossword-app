@@ -15,6 +15,8 @@ export class QuestionFormComponent implements OnInit {
     private _questionUnderEdit: Question;
     private _answerArr: string[];
 
+    mouseOverSubmitFlag = false;
+
     // @Input() questions: Question[];
     @Input()
     set answerArr(value: string[]) {
@@ -86,6 +88,7 @@ export class QuestionFormComponent implements OnInit {
     }
 
     mouseOverSubmit(flag: boolean) {
+        this.mouseOverSubmitFlag = flag;
         if (flag) {
             if (this.clueField.invalid) {
                 document.getElementById('clueRequiredFeedback').style.display = 'inline';
@@ -166,5 +169,6 @@ export class QuestionFormComponent implements OnInit {
         this.clueField.setValue('');
         this.answerField.setValue('');
         this.answerArr.splice(0);
+        this.mouseOverSubmitFlag = false;
     }
 }

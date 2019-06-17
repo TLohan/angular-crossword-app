@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <br>
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
             <div class="col-12" id="header">
                 <h4>Create Crossword</h4>
@@ -8,8 +8,8 @@
             <div *ngIf="pickSizeMode">
                 <app-configure-board [board]="board" (sizeSet)="nextStep($event)"></app-configure-board>
             </div>
-            <div *ngIf="!pickSizeMode">
-                <app-add-questions [board]="board" (save)="save()"></app-add-questions>
+            <div *ngIf="!pickSizeMode" class="col-12">
+                <app-add-questions [board]="board" (save)="triggerSpecifyDifficultyModal()"></app-add-questions>
             </div>
         </div>
     </div>

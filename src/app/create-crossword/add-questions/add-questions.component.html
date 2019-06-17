@@ -4,7 +4,7 @@
             [orientation]="orientation" [answer]="answerArr.join('')" id="appBoard"></app-board>
 
         <div id="addQuestion" class="col-lg-6 col-md-4 col-xs-12">
-            <div class="container-fluid d-block">
+            <div class="container-fluid d-block" style="padding: 0">
                 <app-question-form [conflict]="conflict" [addQuestionMode]="addQuestionMode"
                     [editQuestionMode]="editQuestionMode" [(answerArr)]="answerArr" [maxAnswerLength]="maxAnswerLength"
                     [(orientation)]="orientation" (addQuestion)="addQuestion($event)"></app-question-form>

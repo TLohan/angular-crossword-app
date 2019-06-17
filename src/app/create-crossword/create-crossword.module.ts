@@ -8,6 +8,9 @@ import { AddQuestionsComponent } from './add-questions/add-questions.component';
 import { CreateCrosswordRoutingModule } from './create-crossword-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BoardComponent } from './board/board.component';
+import { SpecifyDifficultyModalComponent } from './specify-difficulty-modal/specify-difficulty-modal.component';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { CreateCrosswordService } from '../services/create-crossword.service';
 
 @NgModule({
     declarations: [
@@ -16,13 +19,17 @@ import { BoardComponent } from './board/board.component';
         CreatedQuestionsListComponent,
         ConfigureBoardComponent,
         AddQuestionsComponent,
-        BoardComponent
+        BoardComponent,
+        SpecifyDifficultyModalComponent
     ],
     imports: [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        CreateCrosswordRoutingModule
-    ]
+        CreateCrosswordRoutingModule,
+        NgbDropdownModule
+    ],
+    providers: [CreateCrosswordService],
+    entryComponents: [SpecifyDifficultyModalComponent]
 })
 export class CreateCrosswordModule { }

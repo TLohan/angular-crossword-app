@@ -68,10 +68,6 @@ export class AddQuestionsComponent implements OnInit {
 
     ngOnInit() {
         this.orientation = Orientation.DOWN;
-        // this.board.questions = [
-        //     new Question('0-0', 'Question 1', 'ANSWER', 'across', '1A'),
-        //     new Question('0-0', 'Question 2', 'ANSWERTWO', 'down', '1D'),
-        // ];
     }
 
 

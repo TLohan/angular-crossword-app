@@ -1,5 +1,6 @@
 import { Question } from '../question/question';
 import { Orientation } from 'src/app/play-crossword/orientation.enum';
+import { Difficulty } from './difficulty.enum';
 
 export class Board {
     id: number;
@@ -7,6 +8,7 @@ export class Board {
     numCols: number;
     questions: Question[] = [];
     boardMap: number[][] = [];
+    difficulty: Difficulty = Difficulty.MEDIUM;
 
     constructor(numRows = 15, numCols = 15) {
         console.log('hit');
@@ -21,6 +23,7 @@ export class Board {
             this.numRows = data['numRows'];
             this.numCols = data['numCols'];
             this.questions = [];
+            this.difficulty = Difficulty.MEDIUM;
             data['questions'].forEach((q: Question) => {
                 this.questions.push(new Question(q.location, q.clue, q.answer, q.orientation, q.identifier));
             });

@@ -23,7 +23,8 @@ export class BoardThumbComponent implements OnInit {
 
     constructor(private store: Store<fromRoot.State>, public authService: Auth2Service, private router: Router) { }
 
-    ngOnInit() { }
+    ngOnInit() {
+     }
 
     playBoard() {
         this.store.dispatch(new boardActions.SetCurrentBoardId(this.board.id));

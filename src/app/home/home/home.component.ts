@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Board } from 'src/app/models/board/board';
 import { BoardStat } from 'src/app/models/board/board-stat';
 import { BoardService } from 'src/app/services/board.service';
@@ -20,10 +20,12 @@ import * as fromAuth from '../../states/auth.reducer';
     styleUrls: ['./home.component.sass']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-    pageSize = 5;
+    _pageSize = 16;
     boards: Board[];
     boardStats: BoardStat[];
     recordTimes: BoardStat[] = [];
+
+    screenWidth: any;
 
     private _filterBy = 'all';
     filteredBoards: Board[] = [];
@@ -44,11 +46,25 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.pagedArray = this.filteredBoards.slice(start, finish);
     }
 
+    get pageSize(): number {
+        return this._pageSize;
+    }
+
+    set pageSize(value: number) {
+        this._pageSize = value;
+        this.page = this._page;
+    }
+
     get profile() {
         return this._profile;
     }
 
-    // tslint:disable-next-line:max-line-length
+    @HostListener('window:resize', ['$event'])
+    getScreenSize(event?) {
+        this.screenWidth = window.innerWidth;
+        this.pageSize = this.screenWidth > 760 ? 16 : 8;
+    }
+
     constructor(private boardService: BoardService,
         private toastr: ToastrService,
         private authService: Auth2Service,
@@ -56,6 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.componentActive = true;
+        this.getScreenSize();
 
         this.store.select(fromAuth.selectIsLoggedIn).subscribe(val => {
             if (val) {

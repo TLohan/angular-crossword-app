@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div *ngIf="filteredBoards.length" class="d-flex justify-content-center">
-                <ngb-pagination class="row" [collectionSize]="filteredBoards.length" [pageSize]="5" [(page)]="page" aria-label="Default pagination"></ngb-pagination>
+                <ngb-pagination class="row " [collectionSize]="filteredBoards.length" [pageSize]="pageSize" [(page)]="page" aria-label="Default pagination"></ngb-pagination>
             </div>
         </div>
     </div>

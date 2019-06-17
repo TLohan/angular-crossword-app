@@ -32,7 +32,7 @@ export class LoadUserStatsFail implements Action {
 
 export class LoadRecordTimes implements Action {
 
-    readonly type = BoardStatActionTypes.LoadUserStats;
+    readonly type = BoardStatActionTypes.LoadRecordTimes;
 }
 
 export class LoadRecordTimesSuccess implements Action {
@@ -44,7 +44,7 @@ export class LoadRecordTimesSuccess implements Action {
 
 export class LoadRecordTimesFail implements Action {
 
-    readonly type = BoardStatActionTypes.LoadUserStatsFail;
+    readonly type = BoardStatActionTypes.LoadRecordTimesFail;
 }
 
 
